@@ -1,0 +1,7 @@
+.metadata
+note_tracker/note_tracker
+note_tracker/a.out
+note_tracker/.vscode
+Debug/*
+Release/*
+
