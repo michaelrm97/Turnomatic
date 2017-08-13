@@ -65,8 +65,7 @@ void filter_input(Sound_t s) {
     for (int i = 0; i < R_NOTE; i++) {
         res[i][res_index] = RES_A1 * comb[comb_index] + filter_coeff[i] * comb[cj] -
             filter_coeff[i] * res[i][rj] - RES_B2 * res[i][rk];
-        Power_t curr = res[i][res_index] * res[i][res_index] * 
-            (note_freq[A4]) / (note_freq[i + MIN_NOTE]);
+        Power_t curr = res[i][res_index] * res[i][res_index];
         curr_powers[i] -= powers[i][powers_index];
         powers[i][powers_index] = curr;
         curr_powers[i] += curr;

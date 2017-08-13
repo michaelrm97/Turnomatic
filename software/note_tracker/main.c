@@ -54,7 +54,6 @@ int main(int argc, char **argv) {
         uint8_t n_loud = filter_notes(loudest_notes, loudest_power, LOUD_NOTES, 1e12);
 
         printf("%d: ", i);
-        printf("%d\n", n_loud);
         for (int j = 0; j < n_loud; j++) {
             printf("%s- %.2f ", note_names[loudest_notes[j]], loudest_power[j] / 1e12);
         }

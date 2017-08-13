@@ -13,14 +13,14 @@ typedef float Power_t; // Average power of filter
 
 #define F_SAMPLE 16000 // Sample rate
 #define N_FILTER 2048 // Comb filter order
-#define A_FILTER 0.9999 // Poles slightly inside unit circle
+#define A_FILTER 0.99999 // Poles slightly inside unit circle
 
-#define COMB_AN 0.8148019179981028
+#define COMB_AN 0.979728190519641
 #define RES_A1  2
-#define RES_B2  0.9998000100000001
+#define RES_B2  0.9999800001000001
 
-#define MIN_NOTE C2
-#define MAX_NOTE B7
+#define MIN_NOTE G3
+#define MAX_NOTE D6
 #define R_NOTE MAX_NOTE - MIN_NOTE + 1
 
 // a2 and b1 coefficients of filter
