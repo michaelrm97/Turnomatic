@@ -173,7 +173,7 @@ uint8_t filter_notes(Note_t *notes, Power_t *powers, uint8_t num, float threshol
             N = int(sys.argv.pop())
             Fs = int(sys.argv.pop())
         except:
-            print('Usage ./note_gen.py --coeff-c N a min max', file=sys.stderr)
+            print('Usage ./note_gen.py --coeff-c Fs N a min max', file=sys.stderr)
             sys.exit(1)
         print("""// Filter bank used to estimate notes
 
