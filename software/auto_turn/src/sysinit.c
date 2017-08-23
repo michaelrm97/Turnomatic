@@ -29,11 +29,7 @@
  * this code.
  */
 
- #if defined(NO_BOARD_LIB)
  #include "chip.h"
- #else
- #include "board.h"
- #endif
 
 /*****************************************************************************
  * Private types/enumerations/variables
@@ -58,27 +54,11 @@ const uint32_t ExtClockIn = 0;
 /* Set up and initialize hardware prior to call to main */
 void SystemInit(void)
 {
-#if defined(__CODE_RED)
 	extern void (* const g_pfnVectors[])(void);
 	SCB->VTOR = (uint32_t) &g_pfnVectors;
-#else
-	extern void *__Vectors;
-	SCB->VTOR = (uint32_t) &__Vectors;
-#endif
 
-#if defined (CORE_M4)
-#if defined(__FPU_PRESENT) && __FPU_PRESENT == 1
 	fpuInit();
-#endif
-#endif
 
-#if !defined (__MULTICORE_M0SLAVE) && !defined (__MULTICORE_M4SLAVE)
-#if defined(NO_BOARD_LIB)
 	/* Chip specific SystemInit */
 	Chip_SystemInit();
-#else
-	/* Board specific SystemInit */
-	Board_SystemInit();
-#endif
-#endif
 }
