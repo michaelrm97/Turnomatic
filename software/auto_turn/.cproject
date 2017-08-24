@@ -211,10 +211,7 @@
 		<projectStorage>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&#13;
 &lt;TargetConfig&gt;&#13;
 &lt;Properties property_0="None" property_2="LPC5410x_256K.cfx" property_3="NXP" property_4="LPC54101J256" property_count="5" version="70200"/&gt;&#13;
-&lt;infoList vendor="NXP"&gt;&#13;
-&lt;info chip="LPC54101J256" flash_driver="LPC5410x_256K.cfx" match_id="0x0" name="LPC54101J256" stub="crt_emu_cm3_gen"&gt;&#13;
-&lt;chip&gt;&#13;
-&lt;name&gt;LPC54101J256&lt;/name&gt;&#13;
+&lt;infoList vendor="NXP"&gt;&lt;info chip="LPC54101J256" flash_driver="LPC5410x_256K.cfx" match_id="0x0" name="LPC54101J256" stub="crt_emu_cm3_gen"&gt;&lt;chip&gt;&lt;name&gt;LPC54101J256&lt;/name&gt;&#13;
 &lt;family&gt;LPC5410x&lt;/family&gt;&#13;
 &lt;vendor&gt;NXP (formerly Philips)&lt;/vendor&gt;&#13;
 &lt;reset board="None" core="Real" sys="Real"/&gt;&#13;
@@ -265,8 +262,7 @@
 &lt;peripheralInstance derived_from="CT32B0" determined="infoFile" id="CT32B0" location="0x400b4000"/&gt;&#13;
 &lt;peripheralInstance derived_from="CT32B1" determined="infoFile" id="CT32B1" location="0x400b8000"/&gt;&#13;
 &lt;/chip&gt;&#13;
-&lt;processor&gt;&#13;
-&lt;name gcc_name="cortex-m4"&gt;Cortex-M4&lt;/name&gt;&#13;
+&lt;processor&gt;&lt;name gcc_name="cortex-m4"&gt;Cortex-M4&lt;/name&gt;&#13;
 &lt;family&gt;Cortex-M&lt;/family&gt;&#13;
 &lt;/processor&gt;&#13;
 &lt;link href="LPC5410x_peripheral.xme" show="embed" type="simple"/&gt;&#13;
