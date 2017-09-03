@@ -2,9 +2,9 @@
 Version=1.0
 
 [PublishSettings]
-OutputFilePath2=C:\Users\Michael\Documents\auto_turn\hardware\.PDF
+OutputFilePath2=C:\Users\Michael\Documents\Code\3117_auto_turn\hardware\.PDF
 ReleaseManaged2=0
-OutputBasePath2=C:\Users\Michael\Documents\auto_turn\hardware\
+OutputBasePath2=C:\Users\Michael\Documents\Code\3117_auto_turn\hardware\
 OutputPathMedia2=
 OutputPathMediaValue2=
 OutputPathOutputer2=[Output Type]
@@ -79,7 +79,7 @@ WmvVideoCodecName4=Windows Media Video V7
 WmvQuality4=80
 
 [GeneratedFilesSettings]
-RelativeOutputPath2=C:\Users\Michael\Documents\auto_turn\hardware\.PDF
+RelativeOutputPath2=C:\Users\Michael\Documents\Code\3117_auto_turn\hardware\.PDF
 OpenOutputs2=1
 RelativeOutputPath3=
 OpenOutputs3=1
@@ -138,9 +138,9 @@ OutputEnabled2_OutputMedium2=2
 OutputEnabled2_OutputMedium3=0
 OutputEnabled2_OutputMedium4=0
 OutputDefault2=0
-PageOptions2=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=2.79|XCorrection=1.00|YCorrection=1.00|PrintKind=0|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
+PageOptions2=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=2.93|XCorrection=1.00|YCorrection=1.00|PrintKind=0|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-4|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 Configuration2_Name1=OutputConfigurationParameter1
-Configuration2_Item1=DesignatorDisplayMode=Physical|PrintArea=SpecificArea|PrintAreaLowerLeftCornerX=10826772|PrintAreaLowerLeftCornerY=2952756|PrintAreaUpperRightCornerX=52165354|PrintAreaUpperRightCornerY=28543307|Record=PcbPrintView
+Configuration2_Item1=DesignatorDisplayMode=Physical|PrintArea=SpecificArea|PrintAreaLowerLeftCornerX=11811024|PrintAreaLowerLeftCornerY=3937008|PrintAreaUpperRightCornerX=51181102|PrintAreaUpperRightCornerY=27559055|Record=PcbPrintView
 Configuration2_Name2=OutputConfigurationParameter2
 Configuration2_Item2=IncludeBottomLayerComponents=True|IncludeMultiLayerComponents=True|IncludeTopLayerComponents=True|IncludeViewports=True|Index=0|Mirror=False|Name=Top Layer|PadNumberFontSize=14|Record=PcbPrintOut|ShowHoles=False|ShowPadNets=False|ShowPadNumbers=False|SubstituteFonts=False
 Configuration2_Name3=OutputConfigurationParameter3
