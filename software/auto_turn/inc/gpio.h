@@ -40,7 +40,7 @@ typedef enum GPIO_INT_LEVEL {
 
 void gpio_init(void);
 void gpio_setPortDir(_U08 port, _U32 pinMask, GPIO_DIR direction);
-void gpio_setPinDif(_U08 port, _U08 pin, GPIO_DIR direction);
+void gpio_setPinDir(_U08 port, _U08 pin, GPIO_DIR direction);
 void gpio_setPinMode(_U08 port, _U08 pin, GPIO_MODE mode);
 void gpio_setPinValue(_U08 port, _U08 pin, _U08 setting);
 void gpio_togglePinValue(_U08 port, _U08 pin);

@@ -8,15 +8,21 @@
 ===============================================================================
 */
 
-#include <chip.h>
+#include "chip.h"
 
 #include <cr_section_macros.h>
 
-// Other include files
+// Hardware include files
+#include <gpio.h>
+#include <timer.h>
+#include <spi.h>
 
 int main(void) {
 
     SystemCoreClockUpdate();
+
+    gpio_init();
+    timer_init();
 
     // Force the counter to be placed into memory
     volatile static int i = 0 ;

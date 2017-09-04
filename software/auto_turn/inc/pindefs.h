@@ -15,7 +15,7 @@
 #define UART_RX_PORT 0
 #define UART_RX_PIN 0
 #define UART_TX_PORT 0
-#define UART_RX_PIN 1
+#define UART_TX_PIN 1
 
 // Microphone
 #define MIC_ADC_PORT 1
@@ -34,16 +34,18 @@
 #define POT_ADC_PIN 29
 
 // PMOLED
-#define SPI_CLK_PORT 1
-#define SPI_CLK_PIN 12
-#define SPI_MOSI_PORT 1
-#define SPI_MOSI_PIN 13
-#define SPI_RES_PORT 1
-#define SPI_RES_PIN 14
-#define SPI_DC_PORT 0
-#define SPI_DC_PIN 20
-#define SPI_CS_PORT 1
-#define SPI_CS_PIN 15
+#define PM_CLK_PORT 1
+#define PM_CLK_PIN 12
+#define PM_MOSI_PORT 1
+#define PM_MOSI_PIN 13
+#define PM_RES_PORT 1
+#define PM_RES_PIN 14
+#define PM_DC_PORT 0
+#define PM_DC_PIN 20
+#define PM_CS_PORT 1
+#define PM_CS_PIN 15
+
+#define PM_CS 0
 
 // LEDs
 #define LED_PAUSED_PORT 1

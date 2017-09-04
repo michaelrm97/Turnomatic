@@ -29,7 +29,8 @@
  * this code.
  */
 
- #include "chip.h"
+#include "chip.h"
+#include <project_config.h>
 
 /*****************************************************************************
  * Private types/enumerations/variables
@@ -60,5 +61,10 @@ void SystemInit(void)
 	fpuInit();
 
 	/* Chip specific SystemInit */
-	Chip_SystemInit();
+	// Chip_SystemInit();
+
+	// Setup oscillator
+	/* Powerup main oscillator */
+	Chip_SetupExtInClocking(CLOCK_RATE);
+
 }
