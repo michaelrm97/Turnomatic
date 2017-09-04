@@ -8,19 +8,15 @@
 ===============================================================================
 */
 
-#include "chip.h"
+#include <chip.h>
 
 #include <cr_section_macros.h>
 
-// TODO: insert other include files here
-
-// TODO: insert other definitions and declarations here
+// Other include files
 
 int main(void) {
 
     SystemCoreClockUpdate();
-
-    // TODO: insert code here
 
     // Force the counter to be placed into memory
     volatile static int i = 0 ;

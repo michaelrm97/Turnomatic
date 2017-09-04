@@ -1,7 +1,7 @@
 /*
- * dma.c
+ * timer.c
  *
- *  Created on: 23 Aug 2017
+ *  Created on: 4 Sep 2017
  *      Author: Michael
  */
 
