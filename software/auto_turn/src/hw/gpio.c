@@ -41,23 +41,67 @@ _U08 gpio_getValue(_U08 port, _U08 pin) {
 	return Chip_GPIO_GetPinState(LPC_GPIO, port, pin);
 }
 
-void gpio_registerInterruptHandler(_U08 port, _U08 pin,
-									_U08 channel,
-									GPIO_INT_MODE mode,
-									GPIO_INT_EDGE edge,
-									GPIO_INT_LEVEL level,
-									void(*handler)(void)) {
+void gpio_assignInterrupt(_U08 port, _U08 pin,
+							_U08 channel,
+							GPIO_MODE mode,
+							GPIO_INT_MODE imode,
+							GPIO_INT_EDGE edge,
+							GPIO_INT_LEVEL level) {
 
-}
+	/* Set pin to GPIO */
+	Chip_IOCON_PinMuxSet(LPC_IOCON, port, pin, (IOCON_DIGITAL_EN | mode));
 
-void gpio_clearInterruptHandler(_U08 channel) {
+	/* Configure GPIO pin as input */
+	Chip_GPIO_SetPinDIRInput(LPC_GPIO, port, pin);
+
+	/* Set pin to corresponding pin interrupt vector */
+	Chip_INMUX_PinIntSel(channel, port, pin);
+
+	/* Clear interrupt status just in case */
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(channel));
+
+	/* Set interrupt detection type */
+	if (imode == GPIO_INT_MODE_EDGE) {
+		Chip_PININT_SetPinModeEdge(LPC_PININT, PININTCH(channel));
+		if (edge == GPIO_INT_EDGE_RISING) {
+			Chip_PININT_EnableIntHigh(LPC_PININT, PININTCH(channel));
+		}
+		else if (edge == GPIO_INT_EDGE_FALLING) {
+			Chip_PININT_EnableIntLow(LPC_PININT, PININTCH(channel));
+		}
+		else if (edge == GPIO_INT_EDGE_ALL){
+			Chip_PININT_EnableIntHigh(LPC_PININT, PININTCH(channel));
+			Chip_PININT_EnableIntLow(LPC_PININT, PININTCH(channel));
+		}
+	}
+	else if (imode == GPIO_INT_MODE_LEVEL) {
+		Chip_PININT_SetPinModeLevel(LPC_PININT, PININTCH(channel));
+		if (level == GPIO_INT_LEVEL_LOW) {
+			Chip_PININT_EnableIntLow(LPC_PININT, PININTCH(channel));
+		}
+		else if (level == GPIO_INT_LEVEL_HIGH) {
+			Chip_PININT_EnableIntHigh(LPC_PININT, PININTCH(channel));
+		}
+	}
 
 }
 
 void gpio_enableInterrupt(_U08 channel) {
-
+	if (channel < 4) {
+		NVIC_ClearPendingIRQ(PIN_INT0_IRQn + channel);
+		NVIC_EnableIRQ(PIN_INT0_IRQn + channel);
+	} else if (channel < 8) {
+		NVIC_ClearPendingIRQ(PIN_INT4_IRQn + channel);
+		NVIC_EnableIRQ(PIN_INT4_IRQn + channel);
+	}
 }
 
 void gpio_disableInterrupt(_U08 channel) {
-
+	if (channel < 4) {
+		NVIC_ClearPendingIRQ(PIN_INT0_IRQn + channel);
+		NVIC_DisableIRQ(PIN_INT0_IRQn + channel);
+	} else if (channel < 8) {
+		NVIC_ClearPendingIRQ(PIN_INT4_IRQn + channel);
+		NVIC_DisableIRQ(PIN_INT4_IRQn + channel);
+	}
 }

@@ -30,8 +30,8 @@ void spi_miso_pinassign(LPC_SPI_T* module, _U08 port, _U08 pin);
 void spi_sck_pinassign(LPC_SPI_T* module, _U08 port, _U08 pin);
 void spi_cs_pinassign(LPC_SPI_T* module, _U08 port, _U08 pin);
 
-_S32 spi_sendBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes, _U08 cs);
-_S32 spi_receiveBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes, _U08 cs);
-_S32 spi_sendReceiveBytes(LPC_SPI_T* module, _U08 *tx_data, _U08 *rx_data, _U08 num_bytes, _U08 cs);
+void spi_sendBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes, _U08 cs);
+void spi_receiveBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes, _U08 cs);
+void spi_sendReceiveBytes(LPC_SPI_T* module, _U08 *tx_data, _U08 *rx_data, _U08 num_tx, _U08 num_rx, _U08 cs);
 
 #endif /* SPI_H_ */

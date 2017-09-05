@@ -53,13 +53,12 @@ void gpio_togglePinValue(_U08 port, _U08 pin);
 
 _U08 gpio_getValue(_U08 port, _U08 pin);
 
-void gpio_registerInterruptHandler(_U08 port, _U08 pin,
-									_U08 channel,
-									GPIO_INT_MODE mode,
-									GPIO_INT_EDGE edge,
-									GPIO_INT_LEVEL level,
-									void(*handler)(void));
-void gpio_clearInterruptHandler(_U08 channel);
+void gpio_assignInterrupt(_U08 port, _U08 pin,
+							_U08 channel,
+							GPIO_MODE mode,
+							GPIO_INT_MODE imode,
+							GPIO_INT_EDGE edge,
+							GPIO_INT_LEVEL level);
 void gpio_enableInterrupt(_U08 channel);
 void gpio_disableInterrupt(_U08 channel);
 
