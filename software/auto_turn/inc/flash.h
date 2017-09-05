@@ -14,9 +14,11 @@
 #include <iap.h>
 
 #define BUFFER_SIZE 4096
+#define PAGE_ALIGNMENT 256
 
-extern _U08 flash_buffer[BUFFER_SIZE];
+extern volatile _U08 flash_buffer[BUFFER_SIZE] __attribute__((aligned(PAGE_ALIGNMENT)));
 
 void flash_copy(_U32 addr, _U32 size);
+void flash_read(_U32 addr, _U32 size);
 
 #endif /* FLASH_H_ */
