@@ -107,7 +107,7 @@ typedef enum _ADC_TSAMP_T {
 } ADC_TSAMP_T;
 
 /** SEQ_CTRL register bit fields */
-// #define ADC_SEQ_CTRL_TRIGGER(n)          ((n)<<12)
+#define ADC_SEQ_CTRL_TRIGGER(n)          ((n)<<12)
 #define ADC_SEQ_CTRL_HWTRIG_POLPOS       (1 << 18)		/*!< HW trigger polarity - positive edge */
 #define ADC_SEQ_CTRL_HWTRIG_SYNCBYPASS   (1 << 19)		/*!< HW trigger bypass synchronisation */
 #define ADC_SEQ_CTRL_START               (1 << 26)		/*!< Start conversion enable bit */
