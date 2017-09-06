@@ -58,9 +58,6 @@ void pm_init(void) {
 	gpio_setPinDir(PM_DC_PORT, PM_DC_PIN, GPIO_DIR_OUTPUT);
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_COMMAND);
 
-	gpio_setPinDir(PM_CS_PORT, PM_CS_PIN, GPIO_DIR_OUTPUT);
-	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
-
 	gpio_setPinDir(PM_RES_PORT, PM_RES_PIN, GPIO_DIR_OUTPUT);
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_RESET);
 

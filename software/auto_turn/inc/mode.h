@@ -11,7 +11,7 @@
 typedef enum {
 	MODE_STOPPED,
 	MODE_PAUSED,
-	MODE_PLAYING`
+	MODE_PLAYING
 } MODE;
 
 #endif /* MODE_H_ */

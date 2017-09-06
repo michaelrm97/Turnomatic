@@ -174,6 +174,22 @@ void uart_init(LPC_USART_T *module, _U32 baudrate,
 	Chip_UART_Enable(module);
 	Chip_UART_TXEnable(module);
 
+	Chip_UART_IntEnable(module, UART_INTEN_START);
+
+	if (module == LPC_USART0) {
+		NVIC_ClearPendingIRQ(UART0_IRQn);
+		NVIC_EnableIRQ(UART0_IRQn);
+	} else if (module == LPC_USART1) {
+		NVIC_ClearPendingIRQ(UART1_IRQn);
+		NVIC_EnableIRQ(UART1_IRQn);
+	} else if (module == LPC_USART2) {
+		NVIC_ClearPendingIRQ(UART2_IRQn);
+		NVIC_EnableIRQ(UART2_IRQn);
+	} else if (module == LPC_USART3) {
+		NVIC_ClearPendingIRQ(UART3_IRQn);
+		NVIC_EnableIRQ(UART3_IRQn);
+	}
+
 }
 
 void uart_deinit(LPC_USART_T *module) {

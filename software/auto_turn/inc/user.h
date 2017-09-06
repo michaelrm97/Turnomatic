@@ -8,6 +8,8 @@
 #ifndef USER_H_
 #define USER_H_
 
+#include <mode.h>
+
 void user_init(void);
 
 void user_mode_set(MODE mode);
