@@ -27,7 +27,7 @@
 
 #include <mode.h>
 
-MODE mode = MODE_PAUSED;
+MODE mode = MODE_STOPPED;
 
 int main(void) {
 
@@ -38,8 +38,8 @@ int main(void) {
     timer_init();
     sct_init();
     adc_init();
+//    uart_init();
 
-    pm_init();
     user_init();
     filter_reset();
 
@@ -54,6 +54,8 @@ int main(void) {
     	case MODE_PAUSED:
     		break;
     	case MODE_PLAYING:
+    		break;
+    	case MODE_LOADING:
     		break;
     	}
 		__WFI;

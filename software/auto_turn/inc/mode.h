@@ -9,9 +9,12 @@
 #define MODE_H_
 
 typedef enum {
-	MODE_STOPPED,
+	MODE_PLAYING,
 	MODE_PAUSED,
-	MODE_PLAYING
+	MODE_STOPPED,
+	MODE_LOADING
 } MODE;
+
+extern MODE mode;
 
 #endif /* MODE_H_ */

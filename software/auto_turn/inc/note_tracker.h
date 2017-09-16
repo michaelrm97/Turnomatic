@@ -15,8 +15,8 @@
 void track_init(void);
 
 Bar_t track_get_bar(void);
-Bar_t track_song(void);
 
-Bar_t track_set_bar(void);
+void track_song(Song s);
+void track_set_bar(Bar_t b);
 
 #endif /* NOTE_TRACKER_H_ */

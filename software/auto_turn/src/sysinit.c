@@ -61,7 +61,7 @@ void SystemInit(void)
 	fpuInit();
 
 	/* Chip specific SystemInit */
-	// Chip_SystemInit();
+//	Chip_SystemInit();
 
 	// Setup oscillator
 	/* Powerup main oscillator */

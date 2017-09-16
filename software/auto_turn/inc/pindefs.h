@@ -16,6 +16,10 @@
 #define UART_RX_PIN 0
 #define UART_TX_PORT 0
 #define UART_TX_PIN 1
+#define UART_CTS_PORT 0
+#define UART_CTS_PIN 2
+#define UART_RTS_PORT 0
+#define UART_RTS_PIN 3
 
 // Microphone
 #define MIC_ADC_PORT 1
