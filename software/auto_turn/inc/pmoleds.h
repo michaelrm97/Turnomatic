@@ -19,7 +19,6 @@ void pm_set_contrast(_U08 level);
 
 void pm_clear(void);
 
-void pm_write_section(_U08 x1, _U08 y1, _U08 x2, _U08 y2);
 void pm_write_buffer(void);
 
 #endif /* PMOLEDS_H_ */

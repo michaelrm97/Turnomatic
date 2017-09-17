@@ -18,6 +18,7 @@
 // Equal to MAX_TURNS + 1
 
 typedef uint8_t Duration_t;
+typedef uint8_t Page_t;
 typedef uint16_t Bar_t;
 
 typedef struct {

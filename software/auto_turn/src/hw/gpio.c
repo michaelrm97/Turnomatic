@@ -87,6 +87,7 @@ void gpio_assignInterrupt(_U08 port, _U08 pin,
 
 void gpio_enableInterrupt(_U08 channel, bool enable) {
 	if (enable) {
+		Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(channel));
 		if (channel < 4) {
 			NVIC_ClearPendingIRQ(PIN_INT0_IRQn + channel);
 			NVIC_EnableIRQ(PIN_INT0_IRQn + channel);
@@ -95,11 +96,10 @@ void gpio_enableInterrupt(_U08 channel, bool enable) {
 			NVIC_EnableIRQ(PIN_INT4_IRQn + channel - 4);
 		}
 	} else {
+//		Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(channel));
 		if (channel < 4) {
-			NVIC_ClearPendingIRQ(PIN_INT0_IRQn + channel);
 			NVIC_DisableIRQ(PIN_INT0_IRQn + channel);
 		} else if (channel < 8) {
-			NVIC_ClearPendingIRQ(PIN_INT4_IRQn + channel - 4);
 			NVIC_DisableIRQ(PIN_INT4_IRQn + channel - 4);
 		}
 	}

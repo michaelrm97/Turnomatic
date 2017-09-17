@@ -8,8 +8,7 @@
 #include <compiler.h>
 
 #include <song_table.h>
-
-#define MAX_SONG_LEN 20
+#include <string.h>
 
 int num_songs;
 int space_used;
@@ -20,3 +19,55 @@ typedef struct {
 	_U16 num_chords;
 	Bar_t page_break[MAX_TURNS];
 } Song_Entry;
+
+// Dummy table
+#define NUM_SONGS 12
+Song_Entry dummy_table[NUM_SONGS] = {
+		{"Twinkle Star", 0, 0, {0, 0, 0, 0}},
+		{"Clocks", 0, 0, {0, 0, 0, 0}},
+		{"Hamilton", 0, 0, {0, 0, 0, 0}},
+		{"La La Land", 0, 0, {0, 0, 0, 0}},
+		{"Sound of Silence", 0, 0, {0, 0, 0, 0}},
+		{"Mad World", 0, 0, {0, 0, 0, 0}},
+		{"All Star", 0, 0, {0, 0, 0, 0}},
+		{"Turkish March", 0, 0, {0, 0, 0, 0}},
+		{"Fur Elise", 0, 0, {0, 0, 0, 0}},
+		{"Eine Kleine", 0, 0, {0, 0, 0, 0}},
+		{"Hung. Dance 9", 0, 0, {0, 0, 0, 0}},
+		{"Spring", 0, 0, {0, 0, 0, 0}}
+};
+
+void song_table_init(void) {
+	num_songs = NUM_SONGS;
+}
+
+int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset) {
+	int n = 0;
+	while (offset < num_songs && n < max) {
+		strcpy(names[n], dummy_table[offset].name);
+		offset++;
+		n++;
+	}
+	return n;
+}
+
+int song_num(void) {
+	return num_songs;
+}
+
+int song_free_space(void) {
+	return 0;
+}
+
+Song song_load(int n) {
+	Song ret = {NULL, {0}, 0 , 0};
+	return ret;
+}
+
+void song_store(void) {
+
+}
+
+void song_delete(int n) {
+
+}

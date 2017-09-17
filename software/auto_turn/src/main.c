@@ -31,7 +31,7 @@
 
 #include <mode.h>
 
-MODE mode = MODE_STOPPED;
+MODE mode;
 
 int main(void) {
 
@@ -45,8 +45,10 @@ int main(void) {
 //    adc_init();
 //    uart_init();
 
+    song_table_init();
+
     user_init();
-    user_mode_set(mode);
+//    usb_init();
 //    filter_reset();
 
 	// Interrupt sources:
@@ -54,20 +56,9 @@ int main(void) {
     // UART
     // Timer
     // PININT 1-5
+    int i = 0;
     while (1) {
-    	_U08 x = gpio_getValue(RESTART_BUTTON_PORT, RESTART_BUTTON_PIN);
-    	_U08 y = gpio_getValue(PAUSE_BUTTON_PORT, PAUSE_BUTTON_PIN);
-    	_U08 z = gpio_getValue(PLAY_BUTTON_PORT, PLAY_BUTTON_PIN);
-    	switch(mode) {
-    	case MODE_STOPPED:
-    	case MODE_PAUSED:
-    		break;
-    	case MODE_PLAYING:
-    		break;
-    	case MODE_LOADING:
-    		break;
-    	}
-//		__WFI;
+		i++;
     }
 
     return 0 ;

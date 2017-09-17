@@ -5,31 +5,27 @@
  *      Author: Michael
  */
 
-#ifndef NOTE_TRACKER_H_
-#define NOTE_TRACKER_H_
+#include <note_tracker.h>
 
-#include <compiler.h>
-
-#include <song.h>
+Bar_t curr_bar = 1;
+Page_t curr_page = 1;
 
 void track_init(void) {
 
 }
 
-Bar_t track_get_bar(void) {
+void track_set_song(Song s) {
 
 }
 
-void track_song(Song s) {
+void track_begin(void) {
 
 }
 
-void track_set_bar(Bar_t b) {
+void track_stop(void) {
 
 }
 
 void ADC_SEQA_IRQHandler(void) {
 
 }
-
-#endif /* NOTE_TRACKER_H_ */

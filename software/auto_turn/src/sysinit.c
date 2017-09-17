@@ -67,6 +67,7 @@ void SystemInit(void)
 #else
 	Chip_SystemInit();
 	Chip_Clock_EnablePeriphClock(SYSCON_CLOCK_IOCON);
+	Chip_Clock_EnablePeriphClock(SYSCON_CLOCK_INPUTMUX);
 #endif
 
 }

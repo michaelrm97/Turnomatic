@@ -65,9 +65,11 @@ void pm_init(void) {
 	gpio_setPinMode(PM_RES_PORT, PM_RES_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_RESET);
 
-	timer_delay_us(10); // Minimum reset low pulse width
+	timer_delay_us(1000); // Minimum reset low pulse width
 
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_NORMAL);
+
+	pm_clear();
 
 	_U08 commands_ssd1306[SSD1306_NUM_INIT_COMMANDS][2] = {
 		{0xA8, 0x3F}, // Set MUX ratio
@@ -103,50 +105,7 @@ void pm_set_contrast(_U08 level) {
 
 void pm_clear(void) {
 	_U08 command[3];
-		_U08 data[MAX_CONSECUTIVE_BYTES] = {0};
-
-		// Set horizontal addressing mode
-		command[0] = SSD1306_SET_ADDRESS_MODE;
-		command[1] = SSD1306_HOR_ADDRESS;
-
-		pm_command(command, 2);
-
-		// Set column addresses to whole address space
-		command[0] = SSD1306_SET_COL_ADDRESS;
-		command[1] = 0;
-		command[2] = PM_WIDTH - 1;
-
-		pm_command(command, 3);
-
-		// Set page addresses to whole address space
-		command[0] = SSD1306_SET_PAGE_ADDRESS;
-		command[1] = 0;
-		command[2] = PM_HEIGHT / 8 - 1;
-
-		pm_command(command, 3);
-
-		// Set line to write data
-		gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_DATA);
-		gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
-		// Number of 0s to write to display
-		int size = PM_WIDTH * PM_HEIGHT / 8;
-		for (int i = 0; i < size; i += MAX_CONSECUTIVE_BYTES) {
-			spi_sendBytes(PM_SPI, data, MAX_CONSECUTIVE_BYTES);
-		}
-		gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
-}
-
-void pm_write_section(_U08 x1, _U08 y1, _U08 x2, _U08 y2) {
-	_U08 command[3];
-
-	// Ensure value is in range
-	if (x2 >= PM_WIDTH) {
-		x2 = PM_WIDTH - 1;
-	}
-
-	if (y2 >= PM_HEIGHT) {
-		y2 = PM_HEIGHT - 1;
-	}
+	_U08 data[MAX_CONSECUTIVE_BYTES] = {0};
 
 	// Set horizontal addressing mode
 	command[0] = SSD1306_SET_ADDRESS_MODE;
@@ -154,31 +113,27 @@ void pm_write_section(_U08 x1, _U08 y1, _U08 x2, _U08 y2) {
 
 	pm_command(command, 2);
 
-	// Set column addresses to relevant addresses
+	// Set column addresses to whole address space
 	command[0] = SSD1306_SET_COL_ADDRESS;
-	command[1] = x1;
-	command[2] = x2;
+	command[1] = 0;
+	command[2] = PM_WIDTH - 1;
 
 	pm_command(command, 3);
 
-	// Set page addresses to relevant addresses
+	// Set page addresses to whole address space
 	command[0] = SSD1306_SET_PAGE_ADDRESS;
-	command[1] = y1 / 8;
-	command[2] = y2 / 8;
+	command[1] = 0;
+	command[2] = PM_HEIGHT / 8 - 1;
 
 	pm_command(command, 3);
 
 	// Set line to write data
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_DATA);
 	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
-	for (int i = y1 / 8; i <= y2 / 8; i++) {
-		for (int j = x1; j <= x2; j += MAX_CONSECUTIVE_BYTES) {
-			int num_bytes = MAX_CONSECUTIVE_BYTES;
-			if (x2 - j < MAX_CONSECUTIVE_BYTES) {
-				num_bytes = x2 - j + 1;
-			}
-			spi_sendBytes(PM_SPI, &pm_buffer[i][j], num_bytes);
-		}
+	// Number of 0s to write to display
+	int size = PM_WIDTH * PM_HEIGHT / 8;
+	for (int i = 0; i < size; i += MAX_CONSECUTIVE_BYTES) {
+		spi_sendBytes(PM_SPI, data, MAX_CONSECUTIVE_BYTES);
 	}
 	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 }
@@ -213,7 +168,7 @@ void pm_write_buffer(void) {
 		for (int j = 0; j < PM_WIDTH; j += MAX_CONSECUTIVE_BYTES) {
 			int num_bytes = MAX_CONSECUTIVE_BYTES;
 			if (PM_WIDTH - j < MAX_CONSECUTIVE_BYTES) {
-				num_bytes = PM_WIDTH - j + 1;
+				num_bytes = PM_WIDTH - j;
 			}
 			spi_sendBytes(PM_SPI, &pm_buffer[i][j], num_bytes);
 		}

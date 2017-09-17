@@ -12,11 +12,13 @@
 
 #include <song.h>
 
+extern Bar_t curr_bar;
+extern Page_t curr_page;
+
 void track_init(void);
 
-Bar_t track_get_bar(void);
-
-void track_song(Song s);
-void track_set_bar(Bar_t b);
+void track_set_song(Song s);
+void track_begin(void);
+void track_stop(void);
 
 #endif /* NOTE_TRACKER_H_ */

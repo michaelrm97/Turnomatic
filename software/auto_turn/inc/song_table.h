@@ -11,9 +11,11 @@
 #include <compiler.h>
 #include <song.h>
 
+#define MAX_SONG_LEN 20
+
 void song_table_init(void);
 
-int song_list_get(char **names, int max, int offset);
+int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset);
 int song_num(void);
 int song_free_space(void);
 
