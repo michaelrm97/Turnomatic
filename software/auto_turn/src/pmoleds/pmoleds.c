@@ -39,7 +39,9 @@
 static void pm_command(_U08 *command, _U08 num_bytes) {
 
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_COMMAND); // Set to write command
-	spi_sendBytes(PM_SPI, command, num_bytes, PM_CS);
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
+	spi_sendBytes(PM_SPI, command, num_bytes);
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 
 }
 
@@ -49,16 +51,19 @@ void pm_init(void) {
 
 	spi_sck_pinassign(PM_SPI, PM_CLK_PORT, PM_CLK_PIN);
 	spi_mosi_pinassign(PM_SPI, PM_MOSI_PORT, PM_MOSI_PIN);
-	spi_cs_pinassign(PM_SPI, PM_CS_PORT, PM_CS_PIN);
+//	spi_cs_pinassign(PM_SPI, PM_CS_PORT, PM_CS_PIN);
 	spi_init(PM_SPI, PM_SPI_BITRATE, SPI_CLOCK_MODE0, SPI_DATA_MSB_FIRST);
 
-	gpio_setPinDir(PM_DC_PORT, PM_DC_PIN, GPIO_DIR_OUTPUT);
-	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_COMMAND);
+	gpio_setPinDir(PM_CS_PORT, PM_CS_PIN, GPIO_DIR_OUTPUT);
+	gpio_setPinMode(PM_CS_PORT, PM_CS_PIN, GPIO_MODE_NONE);
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 
 	gpio_setPinDir(PM_DC_PORT, PM_DC_PIN, GPIO_DIR_OUTPUT);
+	gpio_setPinMode(PM_DC_PORT, PM_DC_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_COMMAND);
 
 	gpio_setPinDir(PM_RES_PORT, PM_RES_PIN, GPIO_DIR_OUTPUT);
+	gpio_setPinMode(PM_RES_PORT, PM_RES_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_RESET);
 
 	timer_delay_us(3); // Minimum reset low pulse width
@@ -123,11 +128,13 @@ void pm_clear(void) {
 
 		// Set line to write data
 		gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_DATA);
+		gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
 		// Number of 0s to write to display
 		int size = PM_WIDTH * PM_HEIGHT / 8;
 		for (int i = 0; i < size; i += MAX_CONSECUTIVE_BYTES) {
-			spi_sendBytes(PM_SPI, data, MAX_CONSECUTIVE_BYTES, PM_CS);
+			spi_sendBytes(PM_SPI, data, MAX_CONSECUTIVE_BYTES);
 		}
+		gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 }
 
 void pm_write_section(_U08 x1, _U08 y1, _U08 x2, _U08 y2) {
@@ -164,21 +171,23 @@ void pm_write_section(_U08 x1, _U08 y1, _U08 x2, _U08 y2) {
 
 	// Set line to write data
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_DATA);
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
 	for (int i = y1 / 8; i <= y2 / 8; i++) {
 		for (int j = x1; j <= x2; j += MAX_CONSECUTIVE_BYTES) {
 			int num_bytes = MAX_CONSECUTIVE_BYTES;
 			if (x2 - j < MAX_CONSECUTIVE_BYTES) {
 				num_bytes = x2 - j + 1;
 			}
-			spi_sendBytes(PM_SPI, &pm_buffer[i][j], num_bytes, PM_CS);
+			spi_sendBytes(PM_SPI, &pm_buffer[i][j], num_bytes);
 		}
 	}
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 }
 
 void pm_write_buffer(void) {
 	_U08 command[3];
 
-	// Set horizontal addressing mode
+	// Set horizontal addressing mode1
 	command[0] = SSD1306_SET_ADDRESS_MODE;
 	command[1] = SSD1306_HOR_ADDRESS;
 
@@ -200,14 +209,16 @@ void pm_write_buffer(void) {
 
 	// Set line to write data
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_DATA);
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
 	for (int i = 0; i < PM_HEIGHT / 8; i++) {
 		for (int j = 0; j < PM_WIDTH; j += MAX_CONSECUTIVE_BYTES) {
 			int num_bytes = MAX_CONSECUTIVE_BYTES;
 			if (PM_WIDTH - j < MAX_CONSECUTIVE_BYTES) {
 				num_bytes = PM_WIDTH - j + 1;
 			}
-			spi_sendBytes(PM_SPI, &pm_buffer[i][j], num_bytes, PM_CS);
+			spi_sendBytes(PM_SPI, &pm_buffer[i][j], num_bytes);
 		}
 	}
+	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 }
 

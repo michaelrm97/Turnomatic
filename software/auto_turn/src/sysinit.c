@@ -60,11 +60,13 @@ void SystemInit(void)
 
 	fpuInit();
 
-	/* Chip specific SystemInit */
-//	Chip_SystemInit();
-
 	// Setup oscillator
 	/* Powerup main oscillator */
+#ifdef EXT_CLOCK
 	Chip_SetupExtInClocking(CLOCK_RATE);
+#else
+	Chip_SystemInit();
+	Chip_Clock_EnablePeriphClock(SYSCON_CLOCK_IOCON);
+#endif
 
 }

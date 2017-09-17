@@ -19,12 +19,15 @@ void spi_init(LPC_SPI_T* module, _U32 bitrate,
 	cfg.mode = clock_mode;
 
 	SPIM_DELAY_CONFIG_T dcfg;
-	dcfg.PreDelay = 0;
-	dcfg.PostDelay = 0;
-	dcfg.FrameDelay = 0;
-	dcfg.TransferDelay = 0;
+	dcfg.PreDelay = 0xD;
+	dcfg.PostDelay = 0xD;
+	dcfg.FrameDelay = 0xD;
+	dcfg.TransferDelay = 0xD;
 
 	Chip_SPI_ConfigureSPI(module, &cfg);
+
+	Chip_SPIM_SetClockRate(module, bitrate);
+
 	Chip_SPIM_DelayConfig(module, &dcfg);
 
 	Chip_SPI_Enable(module);
@@ -183,41 +186,44 @@ void spi_cs_pinassign(LPC_SPI_T* module, _U08 port, _U08 pin) {
 	}
 }
 
-void spi_sendBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes, _U08 cs) {
+void spi_sendBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes) {
 	SPIM_XFER_T cfg;
 	cfg.cbFunc = NULL;
 	cfg.txBuff = data;
 	cfg.rxBuff = NULL;
 	cfg.txCount = num_bytes;
 	cfg.rxCount = 0;
-	cfg.sselNum = cs;
+	cfg.txDoneCount = 0;
+	cfg.rxDoneCount = 0;
 	cfg.state = SPIS_XFER_STATE_IDLE;
-	cfg.options = SPIM_XFER_OPTION_EOT | SPIM_XFER_OPTION_SIZE(8);
+	cfg.options = SPIM_XFER_OPTION_EOF | SPIM_XFER_OPTION_SIZE(8);
 	Chip_SPIM_XferBlocking(module, &cfg);
 }
 
-void spi_receiveBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes, _U08 cs) {
+void spi_receiveBytes(LPC_SPI_T* module, _U08 *data, _U08 num_bytes) {
 	SPIM_XFER_T cfg;
 	cfg.cbFunc = NULL;
 	cfg.txBuff = NULL;
 	cfg.rxBuff = data;
 	cfg.txCount = 0;
 	cfg.rxCount = num_bytes;
-	cfg.sselNum = cs;
+	cfg.txDoneCount = 0;
+	cfg.rxDoneCount = 0;
 	cfg.state = SPIS_XFER_STATE_IDLE;
-	cfg.options = SPIM_XFER_OPTION_EOT | SPIM_XFER_OPTION_SIZE(8);
+	cfg.options = SPIM_XFER_OPTION_EOF | SPIM_XFER_OPTION_SIZE(8);
 	Chip_SPIM_XferBlocking(module, &cfg);
 }
 
-void spi_sendReceiveBytes(LPC_SPI_T* module, _U08 *tx_data, _U08 *rx_data, _U08 num_tx, _U08 num_rx, _U08 cs) {
+void spi_sendReceiveBytes(LPC_SPI_T* module, _U08 *tx_data, _U08 *rx_data, _U08 num_tx, _U08 num_rx) {
 	SPIM_XFER_T cfg;
 	cfg.cbFunc = NULL;
 	cfg.txBuff = tx_data;
 	cfg.rxBuff = rx_data;
 	cfg.txCount = num_tx;
 	cfg.rxCount = num_rx;
-	cfg.sselNum = cs;
+	cfg.txDoneCount = 0;
+	cfg.rxDoneCount = 0;
 	cfg.state = SPIS_XFER_STATE_IDLE;
-	cfg.options = SPIM_XFER_OPTION_EOT | SPIM_XFER_OPTION_SIZE(8);
+	cfg.options = SPIM_XFER_OPTION_EOF | SPIM_XFER_OPTION_SIZE(8);
 	Chip_SPIM_XferBlocking(module, &cfg);
 }

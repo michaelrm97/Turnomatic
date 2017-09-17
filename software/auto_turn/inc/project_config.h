@@ -8,6 +8,7 @@
 #ifndef PROJECT_CONFIG_H_
 #define PROJECT_CONFIG_H_
 
+// #define EXT_CLOCK
 // Clock settings
 #define CLOCK_RATE 20000000
 
