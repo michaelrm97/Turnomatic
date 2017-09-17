@@ -59,7 +59,6 @@ void gpio_assignInterrupt(_U08 port, _U08 pin,
 							GPIO_INT_MODE imode,
 							GPIO_INT_EDGE edge,
 							GPIO_INT_LEVEL level);
-void gpio_enableInterrupt(_U08 channel);
-void gpio_disableInterrupt(_U08 channel);
+void gpio_enableInterrupt(_U08 channel, bool enable);
 
 #endif /* GPIO_H_ */

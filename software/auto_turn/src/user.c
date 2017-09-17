@@ -13,17 +13,22 @@
 #include <mode.h>
 #include <gpio.h>
 #include <pmoleds.h>
+#include <pm_graphics.h>
 
 void user_init(void) {
 
 	// Setup LEDs
-	gpio_setPinDir(LED_PAUSED_PORT, LED_PAUSED_PIN, GPIO_DIR_OUTPUT);
 	gpio_setPinDir(LED_STOPPED_PORT, LED_STOPPED_PIN, GPIO_DIR_OUTPUT);
+	gpio_setPinDir(LED_PAUSED_PORT, LED_PAUSED_PIN, GPIO_DIR_OUTPUT);
 	gpio_setPinDir(LED_RUNNING_PORT, LED_RUNNING_PIN, GPIO_DIR_OUTPUT);
 
-	gpio_setPinMode(LED_PAUSED_PORT, LED_PAUSED_PIN, GPIO_MODE_NONE);
 	gpio_setPinMode(LED_STOPPED_PORT, LED_STOPPED_PIN, GPIO_MODE_NONE);
+	gpio_setPinMode(LED_PAUSED_PORT, LED_PAUSED_PIN, GPIO_MODE_NONE);
 	gpio_setPinMode(LED_RUNNING_PORT, LED_RUNNING_PIN, GPIO_MODE_NONE);
+
+	gpio_setPinValue(LED_STOPPED_PORT, LED_STOPPED_PIN, 0);
+	gpio_setPinValue(LED_PAUSED_PORT, LED_PAUSED_PIN, 0);
+	gpio_setPinValue(LED_RUNNING_PORT, LED_RUNNING_PIN, 0);
 
 	// Setup Buttons
 	gpio_assignInterrupt(RESTART_BUTTON_PORT, RESTART_BUTTON_PIN,
@@ -48,17 +53,52 @@ void user_init(void) {
 
 	// Setup PMOLED
     pm_init();
+    pm_place_string("Turnomatic", 10, 10);
+    pm_write_buffer();
+
 }
 
 void user_mode_set(MODE smode) {
 	switch(smode) {
 	case MODE_PLAYING:
+		gpio_enableInterrupt(RESTART_PININT, TRUE);
+		gpio_enableInterrupt(PAUSE_PININT, TRUE);
+		gpio_enableInterrupt(PLAY_PININT, FALSE);
+		gpio_enableInterrupt(UP_PININT, FALSE);
+		gpio_enableInterrupt(DOWN_PININT, FALSE);
+		gpio_setPinValue(LED_STOPPED_PORT, LED_STOPPED_PIN, 0);
+		gpio_setPinValue(LED_PAUSED_PORT, LED_PAUSED_PIN, 0);
+		gpio_setPinValue(LED_RUNNING_PORT, LED_RUNNING_PIN, 1);
 		break;
 	case MODE_PAUSED:
+		gpio_enableInterrupt(RESTART_PININT, TRUE);
+		gpio_enableInterrupt(PAUSE_PININT, FALSE);
+		gpio_enableInterrupt(PLAY_PININT, TRUE);
+		gpio_enableInterrupt(UP_PININT, TRUE);
+		gpio_enableInterrupt(DOWN_PININT, TRUE);
+		gpio_setPinValue(LED_STOPPED_PORT, LED_STOPPED_PIN, 0);
+		gpio_setPinValue(LED_PAUSED_PORT, LED_PAUSED_PIN, 1);
+		gpio_setPinValue(LED_RUNNING_PORT, LED_RUNNING_PIN, 0);
 		break;
 	case MODE_STOPPED:
+		gpio_enableInterrupt(RESTART_PININT, TRUE);
+		gpio_enableInterrupt(PAUSE_PININT, TRUE);
+		gpio_enableInterrupt(PLAY_PININT, TRUE);
+		gpio_enableInterrupt(UP_PININT, TRUE);
+		gpio_enableInterrupt(DOWN_PININT, TRUE);
+		gpio_setPinValue(LED_STOPPED_PORT, LED_STOPPED_PIN, 1);
+		gpio_setPinValue(LED_PAUSED_PORT, LED_PAUSED_PIN, 0);
+		gpio_setPinValue(LED_RUNNING_PORT, LED_RUNNING_PIN, 0);
 		break;
 	case MODE_LOADING:
+		gpio_enableInterrupt(RESTART_PININT, FALSE);
+		gpio_enableInterrupt(PAUSE_PININT, FALSE);
+		gpio_enableInterrupt(PLAY_PININT, FALSE);
+		gpio_enableInterrupt(UP_PININT, FALSE);
+		gpio_enableInterrupt(DOWN_PININT, FALSE);
+		gpio_setPinValue(LED_STOPPED_PORT, LED_STOPPED_PIN, 1);
+		gpio_setPinValue(LED_PAUSED_PORT, LED_PAUSED_PIN, 0);
+		gpio_setPinValue(LED_RUNNING_PORT, LED_RUNNING_PIN, 0);
 		break;
 	}
 }
@@ -78,6 +118,8 @@ void PIN_INT0_IRQHandler(void) {
 		// Do nothing
 		break;
 	}
+	user_mode_set(MODE_STOPPED);
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(PININTSELECT0));
 }
 
 // PAUSE
@@ -95,6 +137,8 @@ void PIN_INT1_IRQHandler(void) {
 		// Do nothing
 		break;
 	}
+	user_mode_set(MODE_PAUSED);
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(PININTSELECT1));
 }
 
 // PLAY
@@ -113,6 +157,8 @@ void PIN_INT2_IRQHandler(void) {
 		// Do nothing
 		break;
 	}
+	user_mode_set(MODE_PLAYING);
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(PININTSELECT2));
 }
 
 // UP
@@ -130,6 +176,7 @@ void PIN_INT3_IRQHandler(void) {
 		// Do nothing
 		break;
 	}
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(PININTSELECT3));
 }
 
 // DOWN
@@ -147,4 +194,5 @@ void PIN_INT4_IRQHandler(void) {
 		// Do nothing
 		break;
 	}
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(PININTSELECT4));
 }

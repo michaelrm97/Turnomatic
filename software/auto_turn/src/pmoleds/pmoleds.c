@@ -51,7 +51,6 @@ void pm_init(void) {
 
 	spi_sck_pinassign(PM_SPI, PM_CLK_PORT, PM_CLK_PIN);
 	spi_mosi_pinassign(PM_SPI, PM_MOSI_PORT, PM_MOSI_PIN);
-//	spi_cs_pinassign(PM_SPI, PM_CS_PORT, PM_CS_PIN);
 	spi_init(PM_SPI, PM_SPI_BITRATE, SPI_CLOCK_MODE0, SPI_DATA_MSB_FIRST);
 
 	gpio_setPinDir(PM_CS_PORT, PM_CS_PIN, GPIO_DIR_OUTPUT);
@@ -66,7 +65,7 @@ void pm_init(void) {
 	gpio_setPinMode(PM_RES_PORT, PM_RES_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_RESET);
 
-	timer_delay_us(3); // Minimum reset low pulse width
+	timer_delay_us(10); // Minimum reset low pulse width
 
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_NORMAL);
 
@@ -74,9 +73,9 @@ void pm_init(void) {
 		{0xA8, 0x3F}, // Set MUX ratio
 		{0xD3, 0x00}, // Set display offset
 		{0x40, 0x00}, // Set display start line
-		{0xA1, 0x12}, // Set segment re-map
+		{0xA1, 0x00}, // Set segment re-map
 		{0xC8, 0x00}, // Set COM Output scan direction
-		{0xDA, 0x00}, // Set COM Pins hardware configuration
+		{0xDA, 0x12}, // Set COM Pins hardware configuration
 		{0x81, 0x7F}, // Set contrast control
 		{0xA4, 0x00}, // Disable entire display on
 		{0xA6, 0x00}, // Set normal display
