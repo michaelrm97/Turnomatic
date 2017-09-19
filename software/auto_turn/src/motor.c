@@ -13,6 +13,7 @@
 #include <timer.h>
 #include <adc.h>
 #include <sct.h>
+#include <gpio.h>
 
 _U32 motor_pos;
 
@@ -43,6 +44,10 @@ static void motor_set_speed(float speed) {
 
 void motor_init(void) {
 
+	gpio_setPinDir(BUCK_EN_PORT, BUCK_EN_PIN, GPIO_DIR_OUTPUT);
+	gpio_setPinMode(BUCK_EN_PORT, BUCK_EN_PIN, GPIO_MODE_NONE);
+	gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 0);
+
 	// Assign pins
 	sct_pwm_pinassign(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, MOTOR1_SCT_CHANNEL);
 	sct_pwm_pinassign(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, MOTOR2_SCT_CHANNEL);
@@ -70,12 +75,13 @@ void motor_stop(void) {
 
 }
 
-void CT32B1_IRQHandler(void) {
-	_U32 curr_pos = adc_readPin(POT_ADC_PIN);
-	if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
-		motor_stop();
-	} else {
-		motor_set_speed(MOTOR_GAIN * (motor_pos - curr_pos));
-	}
-
+void CT32B2_IRQHandler(void) {
+//	_U32 curr_pos = adc_readPin(POT_ADC_PIN);
+//	if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
+//		motor_stop();
+//	} else {
+//		motor_set_speed(MOTOR_GAIN * (motor_pos - curr_pos));
+//	}
+	Chip_TIMER_ClearMatch(PERIOD_TIMER, 0);
+	gpio_togglePinValue(LED_RUNNING_PORT, LED_RUNNING_PIN);
 }

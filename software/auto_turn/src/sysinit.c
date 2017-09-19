@@ -41,7 +41,7 @@
  ****************************************************************************/
 
 #if defined(NO_BOARD_LIB)
-const uint32_t ExtClockIn = 0;
+const uint32_t ExtClockIn = 20000000;
 #endif
 
 /*****************************************************************************
@@ -64,6 +64,7 @@ void SystemInit(void)
 	/* Powerup main oscillator */
 #ifdef EXT_CLOCK
 	Chip_SetupExtInClocking(CLOCK_RATE);
+	Chip_Clock_EnablePeriphClock(SYSCON_CLOCK_INPUTMUX);
 #else
 	Chip_SystemInit();
 	Chip_Clock_EnablePeriphClock(SYSCON_CLOCK_IOCON);

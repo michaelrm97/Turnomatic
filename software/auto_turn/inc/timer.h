@@ -12,9 +12,9 @@
 
 #include <chip.h>
 
-#define DELAY_TIMER LPC_TIMER0 // Timer to implement delays with
-#define PERIOD_TIMER LPC_TIMER1 // Timer to implement periodic function
-#define PERIOD_TIMER_NVIC CT32B1_IRQn
+#define DELAY_TIMER LPC_TIMER3 // Timer to implement delays with
+#define PERIOD_TIMER LPC_TIMER2 // Timer to implement periodic function
+#define PERIOD_TIMER_NVIC CT32B2_IRQn
 
 void timer_init(void);
 

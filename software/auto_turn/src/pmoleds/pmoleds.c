@@ -65,7 +65,7 @@ void pm_init(void) {
 	gpio_setPinMode(PM_RES_PORT, PM_RES_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_RESET);
 
-	timer_delay_us(1000); // Minimum reset low pulse width
+	timer_delay_us(10); // Minimum reset low pulse width
 
 	gpio_setPinValue(PM_RES_PORT, PM_RES_PIN, PM_NORMAL);
 

@@ -150,8 +150,8 @@ void Chip_SetupExtInClocking(uint32_t iFreq)
 
 	/* Setup PLL configuration */
 	pllConfig.desiredRate = iFreq;
-	pllConfig.InputRate = 20000000;
-	pllConfig.flags = PLL_CONFIGFLAG_USEINRATE;
+	pllConfig.InputRate = 0;
+	pllConfig.flags = PLL_CONFIGFLAG_FORCENOFRACT;
 	pllError = Chip_Clock_SetupPLLData(&pllConfig, &pllSetup);
 	if (pllError == PLL_ERROR_SUCCESS) {
 		pllSetup.flags = PLL_SETUPFLAG_WAITLOCK | PLL_SETUPFLAG_ADGVOLT;

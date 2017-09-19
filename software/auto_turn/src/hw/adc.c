@@ -5,6 +5,8 @@
  *      Author: Michael
  */
 
+#include <chip.h>
+
 #include <adc.h>
 #include <sct.h>
 
@@ -17,17 +19,18 @@ void adc_init(void) {
 	LPC_ADC->STARTUP = 0x3;
 
 	Chip_ADC_Calibration(LPC_ADC);
-	Chip_ADC_SetClockRate(LPC_ADC, ADC_MAX_SAMPLE_RATE);
+//	Chip_ADC_SetClockRate(LPC_ADC, ADC_MAX_SAMPLE_RATE);
+//	LPC_ADC->CTRL |= ADC_CR_ASYNMODE;
 
 	// Set sequencer A from SCT0-7
 	// Set sequencer B to be manual
 
-	Chip_ADC_SetupSequencer(LPC_ADC, ADC_SEQA_IDX, (ADC_SEQ_CTRL_TRIGGER(2) |
-		ADC_SEQ_CTRL_HWTRIG_POLPOS | ADC_SEQ_CTRL_MODE_EOS));
+//	Chip_ADC_SetupSequencer(LPC_ADC, ADC_SEQA_IDX, (ADC_SEQ_CTRL_TRIGGER(2) |
+//		ADC_SEQ_CTRL_HWTRIG_POLPOS | ADC_SEQ_CTRL_MODE_EOS));
 	Chip_ADC_SetupSequencer(LPC_ADC, ADC_SEQB_IDX, ADC_SEQ_CTRL_MODE_EOS);
 
-	Chip_ADC_ClearFlags(LPC_ADC, Chip_ADC_GetFlags(LPC_ADC));
-	Chip_ADC_EnableInt(LPC_ADC, (ADC_INTEN_SEQA_ENABLE));
+//	Chip_ADC_ClearFlags(LPC_ADC, Chip_ADC_GetFlags(LPC_ADC));
+//	Chip_ADC_EnableInt(LPC_ADC, (ADC_INTEN_SEQA_ENABLE));
 
 }
 

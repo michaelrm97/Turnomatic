@@ -96,7 +96,6 @@ void gpio_enableInterrupt(_U08 channel, bool enable) {
 			NVIC_EnableIRQ(PIN_INT4_IRQn + channel - 4);
 		}
 	} else {
-//		Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(channel));
 		if (channel < 4) {
 			NVIC_DisableIRQ(PIN_INT0_IRQn + channel);
 		} else if (channel < 8) {

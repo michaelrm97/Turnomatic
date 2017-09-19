@@ -51,14 +51,6 @@ static void display_bar_page_number(void) {
 	pm_write_buffer();
 }
 
-static void display_page_number(void) {
-	char str[MAX_STR_LEN] = "Page: ";
-	num2str(curr_page, str + 6);
-	pm_clear_rectangle(10, 42, 127, 49);
-	pm_place_string(str, 10, 42);
-	pm_write_buffer();
-}
-
 static void display_song_list(void) {
 
 	pm_clear_rectangle(0, 0, 127, 63);

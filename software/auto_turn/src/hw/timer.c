@@ -13,7 +13,7 @@ void timer_init(void) {
 	Chip_TIMER_Init(DELAY_TIMER); // Timer 0 for delay
 	Chip_TIMER_Init(PERIOD_TIMER); // Timer 1 for periodic
 
-	_U08 prescale = Chip_Clock_GetSystemClockRate()/1000000;
+	_U08 prescale = Chip_Clock_GetSystemClockRate()/1000000 - 1;
 	Chip_TIMER_PrescaleSet(DELAY_TIMER, prescale);
 	Chip_TIMER_PrescaleSet(PERIOD_TIMER, prescale);
 

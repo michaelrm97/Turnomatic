@@ -1,10 +1,14 @@
 /*
 ===============================================================================
- Name        : auto_turn.c
- Author      : $(author)
- Version     :
- Copyright   : $(copyright)
- Description : main definition
+ Name        : main.c
+ Author      : Michael Manansala
+ Description : Code for an automatic sheet music page turner
+ 	 	 	   Interfaces with peripherals on Turnomatic PCB
+ 	 	 	   and performs DSP on sound signal to track progress through
+ 	 	 	   sheet music
+ 	 	 	   Special thanks to Thomas Dransfield whose Toucan for the LPC54101
+ 	 	 	   is what much of the LPCOpen Abstraction in this code base is
+ 	 	 	   based on
 ===============================================================================
 */
 
@@ -33,6 +37,25 @@
 
 MODE mode;
 
+static void num2str(int n, char *s) {
+	if (n == 0) {
+		s[0] = '0';
+		s[1] = '\0';
+		return;
+	}
+	int num = n;
+	int digits = 0;
+	while (num) {
+		digits++;
+		num /= 10;
+	}
+	s[digits--] = '\0';
+	while (digits >= 0) {
+		s[digits--] = (n % 10) + '0';
+		n /= 10;
+	}
+}
+
 int main(void) {
 
     // Initialize hardware
@@ -41,8 +64,9 @@ int main(void) {
     gpio_init();
     timer_init();
 
-//    sct_init();
-//    adc_init();
+    sct_init();
+    adc_init();
+    motor_init();
 //    uart_init();
 
     song_table_init();
@@ -56,10 +80,7 @@ int main(void) {
     // UART
     // Timer
     // PININT 1-5
-    int i = 0;
-    while (1) {
-		i++;
-    }
+    while (1);
 
     return 0 ;
 }
