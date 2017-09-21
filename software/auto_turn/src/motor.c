@@ -49,10 +49,16 @@ void motor_init(void) {
 	gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 0);
 
 	// Assign pins
-	sct_pwm_pinassign(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, MOTOR1_SCT_CHANNEL);
-	sct_pwm_pinassign(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, MOTOR2_SCT_CHANNEL);
-	adc_pinassign(POT_ADC_PORT, POT_ADC_PIN);
-
+    sct_pwm_init(1000);
+//	sct_pwm_pinassign(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, MOTOR1_SCT_CHANNEL);
+    Chip_IOCON_PinMuxSet(LPC_IOCON, MOTOR_IN_1_PORT, MOTOR_IN_1_PIN,
+    		IOCON_INPFILT_OFF | IOCON_DIGITAL_EN | IOCON_MODE_INACT | IOCON_FUNC2);
+//	sct_pwm_pinassign(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, MOTOR2_SCT_CHANNEL);
+	sct_pwm_setOutPin(MOTOR1_SCT_INDEX, MOTOR1_SCT_CHANNEL);
+//	sct_pwm_setOutPin(MOTOR2_SCT_INDEX, MOTOR2_SCT_CHANNEL);
+	sct_pwm_setPinDutyCycle(MOTOR1_SCT_INDEX, 0);
+	sct_pwm_start();
+	Chip_IOCON_PinMuxSet(LPC_IOCON, POT_ADC_PORT, POT_ADC_PIN, IOCON_INPFILT_OFF);
 }
 
 void motor_set(_U32 pos) {
@@ -72,16 +78,14 @@ void motor_stop(void) {
 	sct_pwm_stop();
 
 	timer_unset_periodic();
-
 }
 
 void CT32B2_IRQHandler(void) {
-//	_U32 curr_pos = adc_readPin(POT_ADC_PIN);
-//	if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
-//		motor_stop();
-//	} else {
-//		motor_set_speed(MOTOR_GAIN * (motor_pos - curr_pos));
-//	}
 	Chip_TIMER_ClearMatch(PERIOD_TIMER, 0);
-	gpio_togglePinValue(LED_RUNNING_PORT, LED_RUNNING_PIN);
+	_U32 curr_pos = adc_readPin(POT_ADC_PIN);
+	if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
+		motor_stop();
+	} else {
+		motor_set_speed(MOTOR_GAIN * (motor_pos - curr_pos));
+	}
 }
