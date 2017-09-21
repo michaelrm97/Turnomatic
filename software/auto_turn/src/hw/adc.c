@@ -13,6 +13,9 @@
 #include <adc_5410x.h>
 
 void adc_init(void) {
+
+    sct_init();
+
 	Chip_ADC_Init(LPC_ADC, (ADC_CR_RESOL(0x3) | ADC_CR_TSAMP(ADC_TSAMP_7CLK5)));
 
 	LPC_ADC->STARTUP = 0x1;

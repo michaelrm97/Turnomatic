@@ -64,40 +64,21 @@ int main(void) {
 
     gpio_init();
     timer_init();
-
-    sct_init();
     adc_init();
-    motor_init();
 //    uart_init();
-//    track_init();
 
     song_table_init();
-
+    motor_init();
+    track_init();
     user_init();
-//    adc_pinassign(POT_ADC_PORT, POT_ADC_PIN);
-
-//    usb_init();
-//    filter_reset();
-//    pm_init();
-
-    sct_pwm_setPinDutyCycle(MOTOR1_SCT_INDEX, 50);
-//    sct_pwm_setPinDutyCycle(MOTOR2_SCT_CHANNEL, 50);
+    usb_init();
 
 	// Interrupt sources:
     // ADC
     // UART
     // Timer
     // PININT 1-5
-    while (1) {
-//    	timer_delay_us(100000);
-//    	_U16 adc = adc_readPin(POT_ADC_CHANNEL);
-//    	pm_clear_rectangle(10, 10, 120, 20);
-//    	char str[20] = "ADC: ";
-//    	num2str(adc, str + 5);
-//    	pm_place_string(str, 10, 10);
-//    	pm_write_buffer();
-//    	gpio_togglePinValue(LED_RUNNING_PORT, LED_RUNNING_PIN);
-    }
+    while (1);
 
     return 0 ;
 }
