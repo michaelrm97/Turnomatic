@@ -15,7 +15,7 @@
 
 void sct_init(void);
 
-void sct_set_periodic(_U32 period);
+void sct_set_periodic(_U32 frequency);
 void sct_unset_periodic(void);
 
 #endif /* SCT_H_ */

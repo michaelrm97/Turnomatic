@@ -34,6 +34,7 @@ void timer_set_periodic(_U32 period) {
 	Chip_TIMER_Reset(PERIOD_TIMER);
 	Chip_TIMER_ResetOnMatchEnable(PERIOD_TIMER, 0);
 	Chip_TIMER_MatchEnableInt(PERIOD_TIMER, 0);
+	Chip_TIMER_MatchDisableInt(PERIOD_TIMER, 1);
 	Chip_TIMER_SetMatch(PERIOD_TIMER, 0, period);
 	NVIC_ClearPendingIRQ(PERIOD_TIMER_NVIC);
 	NVIC_EnableIRQ(PERIOD_TIMER_NVIC);

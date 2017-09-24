@@ -32,7 +32,8 @@ void motor_init(void) {
 	gpio_setPinMode(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, 0);
 
-	Chip_IOCON_PinMuxSet(LPC_IOCON, POT_ADC_PORT, POT_ADC_PIN, IOCON_INPFILT_OFF);
+//	Chip_IOCON_PinMuxSet(LPC_IOCON, POT_ADC_PORT, POT_ADC_PIN, IOCON_INPFILT_OFF);
+	adc_pinassign(POT_ADC_PORT, POT_ADC_PIN);
 }
 
 void motor_set(_U32 pos) {
@@ -53,16 +54,40 @@ void motor_stop(void) {
 void CT32B2_IRQHandler(void) {
 	// Rudimentary control system
 	// In future will take derivative into account
-	Chip_TIMER_ClearMatch(PERIOD_TIMER, 0);
-	_U32 curr_pos = adc_readPin(POT_ADC_PIN);
-	if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
-		motor_stop();
-	} else if (curr_pos < motor_pos) {
-		// Go forwards
+	if (Chip_TIMER_MatchPending(PERIOD_TIMER, 0)) {
+		Chip_TIMER_ClearMatch(PERIOD_TIMER, 0);
+		_U16 ticks;
+		_U32 curr_pos = adc_readPin(POT_ADC_CHANNEL);
+		if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
+			motor_stop();
+		} else if (curr_pos < motor_pos) {
+			// Work out duty cycle
+			ticks = (motor_pos - curr_pos) * MOTOR_GAIN; // How long to keep motor on in ticks
+			// Go forwards
+			gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 1);
+			gpio_setPinValue(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, 0);
+			if (ticks < MOTOR_SAMPLE_PERIOD) { // Disable motor after certain time
+				Chip_TIMER_SetMatch(PERIOD_TIMER, 1, ticks);
+				Chip_TIMER_MatchEnableInt(PERIOD_TIMER, 1);
+			} else {
+				Chip_TIMER_MatchDisableInt(PERIOD_TIMER, 1);
+			}
+		} else {
+			// Work out duty cycle
+			ticks = (curr_pos - motor_pos) * MOTOR_GAIN; // How long to keep motor on in ticks
+			gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 0);
+			gpio_setPinValue(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, 1);
+			if (ticks < MOTOR_SAMPLE_PERIOD) {
+				Chip_TIMER_SetMatch(PERIOD_TIMER, 1, ticks);
+				Chip_TIMER_MatchEnableInt(PERIOD_TIMER, 1);
+			} else {
+				Chip_TIMER_MatchDisableInt(PERIOD_TIMER, 1);
+			}
+		}
+	}
+	if (Chip_TIMER_MatchPending(PERIOD_TIMER, 1)) {
+		Chip_TIMER_ClearMatch(PERIOD_TIMER, 1);
 		gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 1);
-		gpio_setPinValue(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, 0);
-	} else {
-		gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 0);
 		gpio_setPinValue(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, 1);
 	}
 }

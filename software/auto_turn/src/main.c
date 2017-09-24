@@ -38,25 +38,6 @@
 
 MODE mode;
 
-static void num2str(int n, char *s) {
-	if (n == 0) {
-		s[0] = '0';
-		s[1] = '\0';
-		return;
-	}
-	int num = n;
-	int digits = 0;
-	while (num) {
-		digits++;
-		num /= 10;
-	}
-	s[digits--] = '\0';
-	while (digits >= 0) {
-		s[digits--] = (n % 10) + '0';
-		n /= 10;
-	}
-}
-
 int main(void) {
 
     // Initialize hardware
@@ -65,13 +46,17 @@ int main(void) {
     gpio_init();
     timer_init();
     adc_init();
-//    uart_init();
 
     song_table_init();
     motor_init();
     track_init();
     user_init();
     usb_init();
+
+    track_begin();
+
+//    gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 1); // Turn on buck
+//    gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 1); // Turn on buck
 
 	// Interrupt sources:
     // ADC
