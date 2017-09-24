@@ -19,6 +19,7 @@ void track_init(void);
 
 void track_set_song(Song s);
 void track_begin(void);
+Note_t track_update(void);
 void track_stop(void);
 
 #endif /* NOTE_TRACKER_H_ */

@@ -7,3 +7,5 @@ note_tracker/.vscode
 */Release/*
 */*.xml
 */.settings
+auto_turn/.project
+auto_turn/.cproject

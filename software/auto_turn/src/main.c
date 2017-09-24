@@ -33,10 +33,12 @@
 #include <filters.h>
 #include <song_table.h>
 #include <note_tracker.h>
+#include <notes.h>
 
 #include <mode.h>
 
 MODE mode;
+int samples = 0;
 
 int main(void) {
 
@@ -53,8 +55,6 @@ int main(void) {
     user_init();
     usb_init();
 
-    track_begin();
-
 //    gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 1); // Turn on buck
 //    gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 1); // Turn on buck
 
@@ -63,7 +63,16 @@ int main(void) {
     // UART
     // Timer
     // PININT 1-5
-    while (1);
+    while (1) {
+    	if (mode == MODE_PLAYING) {
+    		Note_t n = track_update();
+    		if (n != NO_NOTE) {
+				pm_clear_rectangle(0, 0, 127, 63);
+				pm_place_string(note_names[n], 10, 10);
+				pm_write_buffer();
+    		}
+    	}
+    }
 
     return 0 ;
 }

@@ -22,8 +22,6 @@ void adc_init(void) {
 	LPC_ADC->STARTUP = 0x3;
 
 	Chip_ADC_Calibration(LPC_ADC);
-	Chip_ADC_SetClockRate(LPC_ADC, ADC_MAX_SAMPLE_RATE);
-	LPC_ADC->CTRL |= ADC_CR_ASYNC_MODE;
 
 	// Set sequencer A from SCT0-7
 	// Set sequencer B to be manual
@@ -32,9 +30,6 @@ void adc_init(void) {
 		ADC_SEQ_CTRL_HWTRIG_POLPOS | ADC_SEQ_CTRL_MODE_EOS));
 	Chip_ADC_SetupSequencer(LPC_ADC, ADC_SEQB_IDX, ADC_SEQ_CTRL_MODE_EOS);
 	Chip_ADC_EnableSequencer(LPC_ADC, ADC_SEQB_IDX);
-
-	Chip_ADC_ClearFlags(LPC_ADC, Chip_ADC_GetFlags(LPC_ADC));
-	Chip_ADC_EnableInt(LPC_ADC, (ADC_INTEN_SEQA_ENABLE));
 
 }
 
@@ -64,8 +59,11 @@ void adc_set_periodic(_U32 frequency,_U08 channel) {
 	Chip_ADC_SetSequencerBits(LPC_ADC, ADC_SEQA_IDX, ADC_SEQ_CTRL_CHANSEL(channel));
 
 	sct_set_periodic(frequency);
+	Chip_ADC_ClearFlags(LPC_ADC, ADC_FLAGS_SEQA_INT_MASK);
+	Chip_ADC_EnableInt(LPC_ADC, (ADC_INTEN_SEQA_ENABLE));
 	Chip_ADC_EnableSequencer(LPC_ADC, ADC_SEQA_IDX);
 	NVIC_EnableIRQ(ADC_SEQA_IRQn);
+
 }
 
 void adc_unset_periodic(void) {
