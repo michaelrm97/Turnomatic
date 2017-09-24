@@ -21,7 +21,7 @@ static int powers_index;
 
 // Reset all filters (0 initialize everything)
 void filter_reset(void) {
-    
+
     for (int i = 0; i < N_FILTER; i++) {
         filter_values[i] = 0;
     }
@@ -42,7 +42,7 @@ void filter_reset(void) {
         }
         curr_powers[i] = 0;
     }
-    
+
     filter_index = 0;
     comb_index = 0;
     res_index = 0;
@@ -52,7 +52,7 @@ void filter_reset(void) {
 
 // Add a sound value to the filter input
 void filter_input(Sound_t s) {
-    
+
     // Comb filter
     comb[comb_index] = s - COMB_AN * filter_values[filter_index];
     filter_values[filter_index] = s;
@@ -62,7 +62,7 @@ void filter_input(Sound_t s) {
     int rj = res_index - 1 >= 0 ? res_index - 1 : N_RES - 1;
     int rk = rj - 1 >= 0 ? rj - 1 : N_RES - 1;
 
-    for (int i = 0; i < R_NOTE; i++) {
+    for (int i = 0; i < 16; i++) {
         res[i][res_index] = RES_A1 * comb[comb_index] + filter_coeff[i] * comb[cj] -
             filter_coeff[i] * res[i][rj] - RES_B2 * res[i][rk];
         Power_t curr = res[i][res_index] * res[i][res_index];
@@ -91,7 +91,6 @@ uint8_t filter_notes(Note_t *notes, Power_t *powers, uint8_t num, float threshol
     Power_t sort[num];
     uint8_t count = 0;
     for (int i = 0; i < R_NOTE; i++) {
-        // printf("%d %.2f\n", i + MIN_NOTE, curr_powers[i]);
         if (curr_powers[i] >= threshold) {
             // Check whether note is in the top num of values
             int added = 0;
@@ -114,7 +113,6 @@ uint8_t filter_notes(Note_t *notes, Power_t *powers, uint8_t num, float threshol
                 }
             }
             // Add to end
-            // printf("%d %d %d %d\n", added, j, count, num);
             if (!added && j == count && count < num) {
                 notes[j] = i + MIN_NOTE;
                 sort[j] = curr_powers[i];

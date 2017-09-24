@@ -11,7 +11,7 @@ typedef float Filter_t; // Filter values
 typedef float Power_t; // Average power of filter
 
 
-#define F_SAMPLE 16000 // Sample rate
+#define F_SAMPLE 8000 // Sample rate
 #define N_FILTER 2048 // Comb filter order
 #define A_FILTER 0.99999 // Poles slightly inside unit circle
 

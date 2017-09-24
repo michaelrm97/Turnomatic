@@ -21,7 +21,7 @@ static int powers_index;
 
 // Reset all filters (0 initialize everything)
 void filter_reset(void) {
-    
+
     for (int i = 0; i < N_FILTER; i++) {
         filter_values[i] = 0;
     }
@@ -42,7 +42,7 @@ void filter_reset(void) {
         }
         curr_powers[i] = 0;
     }
-    
+
     filter_index = 0;
     comb_index = 0;
     res_index = 0;
@@ -52,7 +52,7 @@ void filter_reset(void) {
 
 // Add a sound value to the filter input
 void filter_input(Sound_t s) {
-    
+
     // Comb filter
     comb[comb_index] = s - COMB_AN * filter_values[filter_index];
     filter_values[filter_index] = s;
@@ -62,7 +62,7 @@ void filter_input(Sound_t s) {
     int rj = res_index - 1 >= 0 ? res_index - 1 : N_RES - 1;
     int rk = rj - 1 >= 0 ? rj - 1 : N_RES - 1;
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < R_NOTE; i++) {
         res[i][res_index] = RES_A1 * comb[comb_index] + filter_coeff[i] * comb[cj] -
             filter_coeff[i] * res[i][rj] - RES_B2 * res[i][rk];
         Power_t curr = res[i][res_index] * res[i][res_index];
