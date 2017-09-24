@@ -9,3 +9,4 @@ note_tracker/.vscode
 */.settings
 auto_turn/.project
 auto_turn/.cproject
+*/__pycache__/*

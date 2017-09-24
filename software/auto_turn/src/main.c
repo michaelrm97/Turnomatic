@@ -38,7 +38,6 @@
 #include <mode.h>
 
 MODE mode;
-int samples = 0;
 
 int main(void) {
 
@@ -65,12 +64,7 @@ int main(void) {
     // PININT 1-5
     while (1) {
     	if (mode == MODE_PLAYING) {
-    		Note_t n = track_update();
-    		if (n != NO_NOTE) {
-				pm_clear_rectangle(0, 0, 127, 63);
-				pm_place_string(note_names[n], 10, 10);
-				pm_write_buffer();
-    		}
+    		user_update();
     	}
     }
 

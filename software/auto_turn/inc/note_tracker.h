@@ -13,7 +13,9 @@
 #include <song.h>
 
 extern Bar_t curr_bar;
+extern Bar_t max_bar;
 extern Page_t curr_page;
+extern Page_t max_page;
 
 void track_init(void);
 

@@ -14,4 +14,6 @@ void user_init(void);
 
 void user_mode_set(MODE smode);
 
+void user_update(void);
+
 #endif /* USER_H_ */

@@ -60,7 +60,17 @@ int song_free_space(void) {
 }
 
 Song song_load(int n) {
-	Song ret = {NULL, {0}, 0 , 0};
+	Song ret;
+	ret.chords = (Chord *)(dummy_table[n].flash_page * 256);
+	ret.num_chords = dummy_table[n].num_chords;
+	int i = 0;
+	for (i = 0; i < 4; i++) {
+		if (!dummy_table[i].page_break[i]) {
+			break;
+		}
+		ret.page_break[i] = dummy_table[n].page_break[i];
+	}
+	ret.num_pages = i + 1;
 	return ret;
 }
 
