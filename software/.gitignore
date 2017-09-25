@@ -10,3 +10,6 @@ note_tracker/.vscode
 auto_turn/.project
 auto_turn/.cproject
 */__pycache__/*
+*/*/.vs/*
+*/*/*/bin/*
+*/*/*/obj/*
