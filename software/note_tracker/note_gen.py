@@ -19,7 +19,7 @@ def gen_notes():
     return x
 
 def gen_names():
-    notes = ['C', 'CS', 'D', 'Eb', 'E', 'F', 'FS', 'G', 'GS', 'A', 'Bb', 'B']
+    notes = ['C', 'CS', 'D', 'DS', 'E', 'F', 'FS', 'G', 'GS', 'A', 'AS', 'B']
     j = 0
     names = []
     for i in range(-1, 10):

@@ -25,6 +25,7 @@
 
 int curr_selection;
 int curr_start;
+Note_t last_note = NO_NOTE;
 
 static void num2str(int n, char *s) {
 	if (n == 0) {
@@ -70,16 +71,15 @@ static void update_page_number(void) {
 	}
 }
 
-static void update_note(void) {
-	Note_t n = track_update();
-	pm_clear_rectangle(76, 39, 122, 62);
+static void update_note(Note_t n) {
+	pm_clear_rectangle(78, 39, 124, 62);
 	if (n != NO_NOTE) {
-		int x = 76;
+		int x = 78;
 		int i = 0;
 		pm_place_image(note_images[(note_names[n][i] - 'A')], x, 39);
 		x += 16;
 		i++;
-		if (note_names[n][i] == 's') {
+		if (note_names[n][i] == 'S') {
 			pm_place_image(sharp, x, 39);
 			x += 16;
 			i++;
@@ -93,8 +93,9 @@ static void update_note(void) {
 	}
 }
 
-static void setup_play_display(void) {
+static void setup_play_display(char *name) {
 	pm_clear_rectangle(0, 0, 127, 63);
+	pm_place_string(name, 1, 1);
 	pm_draw_hline(0, 127, 10);
 	pm_draw_hline(0, 127, 37);
 	pm_draw_vline(74, 38, 63);
@@ -123,7 +124,11 @@ static void setup_play_display(void) {
 	}
 	update_bar_number();
 	update_page_number();
-	update_note();
+	Note_t n = track_update();
+	last_note = n;
+	if (n != NO_NOTE) {
+		update_note(n);
+	}
 	pm_write_buffer();
 }
 
@@ -234,10 +239,13 @@ void user_mode_set(MODE smode) {
 }
 
 void user_update(void) {
-	update_bar_number();
-	update_page_number();
-	update_note();
-	pm_write_buffer();
+
+	Note_t n = track_update();
+	if (n != last_note && n != NO_NOTE) {
+		update_note(n);
+		last_note = n;
+		pm_write_buffer();
+	}
 }
 
 // RESTART
@@ -293,13 +301,6 @@ void PIN_INT1_IRQHandler(void) {
 	}
 }
 
-static void begin_play(void) {
-	track_set_song(song_load(curr_selection));
-	setup_play_display();
-	user_mode_set(MODE_PLAYING);
-	track_begin();
-}
-
 // PLAY
 void PIN_INT2_IRQHandler(void) {
 	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(PININTSELECT2));
@@ -315,7 +316,10 @@ void PIN_INT2_IRQHandler(void) {
 	case MODE_STOPPED:
 		// Play currently selected song
 		if (curr_selection < song_num()) {
-			begin_play();
+			track_set_song(song_load(curr_selection));
+			setup_play_display(song_name_get(curr_selection));
+			user_mode_set(MODE_PLAYING);
+			track_begin();
 		}
 		break;
 	case MODE_LOADING:

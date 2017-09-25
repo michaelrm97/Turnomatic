@@ -41,6 +41,10 @@ void song_table_init(void) {
 	num_songs = NUM_SONGS;
 }
 
+char *song_name_get(int n) {
+	return dummy_table[n].name;
+}
+
 int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset) {
 	int n = 0;
 	while (offset < num_songs && n < max) {

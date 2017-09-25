@@ -15,6 +15,7 @@
 
 void song_table_init(void);
 
+char *song_name_get(int n);
 int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset);
 int song_num(void);
 int song_free_space(void);
