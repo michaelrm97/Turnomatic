@@ -26,12 +26,15 @@ void usb_init(void) {
 }
 
 void UART0_IRQHandler(void) {
-	_U08 data[32];
-	char *send = "Nice to meet you!";
-	uart_readBytes(USB_UART, data, 12);
-	uart_sendBytes(USB_UART, send, 17);
-	data[12] = '\0';
-	pm_clear_rectangle(0, 0, 127, 63);
-	pm_place_string((char *) data, 10, 10);
-	pm_write_buffer();
+	// Check that we actually have data to receive
+	if (Chip_UART_GetStatus(USB_UART) & UART_STAT_RXRDY) {
+		_U08 data[32];
+		char *send = "Nice to meet you!";
+		uart_readBytes(USB_UART, data, 12);
+		uart_sendBytes(USB_UART, send, 17);
+		data[12] = '\0';
+		pm_clear_rectangle(0, 0, 127, 63);
+		pm_place_string((char *) data, 10, 10);
+		pm_write_buffer();
+	}
 }
