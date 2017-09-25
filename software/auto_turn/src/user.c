@@ -47,9 +47,9 @@ static void num2str(int n, char *s) {
 
 static void update_bar_number(void) {
 	char str[4];
-	pm_clear_rectangle(7, 12, 53, 35);
+	pm_clear_rectangle(11, 12, 57, 35);
 	num2str(curr_bar, str);
-	int x = 55 - 16 * strlen(str);
+	int x = 59 - 16 * strlen(str);
 	int i = 0;
 	while (str[i]) {
 		pm_place_image(digits[str[i] - '0'], x, 11);
@@ -99,7 +99,7 @@ static void setup_play_display(char *name) {
 	pm_draw_hline(0, 127, 10);
 	pm_draw_hline(0, 127, 37);
 	pm_draw_vline(74, 38, 63);
-	pm_place_image(slash1, 55, 11);
+	pm_place_image(slash1, 59, 11);
 	pm_place_image(slash1, 42, 39);
 	pm_place_character('B', 1, 12);
 	pm_place_character('A', 1, 20);
@@ -107,7 +107,7 @@ static void setup_play_display(char *name) {
 	pm_place_string("PAGE", 1, 47);
 	char str[4];
 	num2str(max_bar, str);
-	int x = 71;
+	int x = 75;
 	int i = 0;
 	while (str[i]) {
 		pm_place_image(digits[str[i] - '0'], x, 11);

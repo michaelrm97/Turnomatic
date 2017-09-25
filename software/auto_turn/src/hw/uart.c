@@ -167,14 +167,14 @@ void uart_init(LPC_USART_T *module, _U32 baudrate,
 	Chip_Clock_SetUARTBaseClockRate(Chip_Clock_GetMainClockRate());
 
 	Chip_UART_Init(module);
-	_U32 cfg = datalen | parity | stopbits;
+	_U32 cfg = datalen | parity | stopbits | UART_CFG_CTSEN;
 
 	Chip_UART_ConfigData(module, cfg);
 	Chip_UART_SetBaud(module, baudrate);
 	Chip_UART_Enable(module);
 	Chip_UART_TXEnable(module);
 
-	Chip_UART_IntEnable(module, UART_INTEN_START);
+	Chip_UART_IntEnable(module, UART_INTEN_RXRDY);
 
 	if (module == LPC_USART0) {
 		NVIC_ClearPendingIRQ(UART0_IRQn);

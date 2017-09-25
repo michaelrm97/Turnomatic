@@ -36,7 +36,7 @@
 
 // USB Constants
 #define USB_UART LPC_USART0
-#define UART_BAUDRATE 9600
+#define UART_BAUDRATE 115200
 
 // MIC Settings
 #define MIC_ADC_CHANNEL 8

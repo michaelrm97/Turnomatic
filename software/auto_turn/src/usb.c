@@ -10,6 +10,10 @@
 
 #include <uart.h>
 
+#include <string.h>
+#include <pmoleds.h>
+#include <pm_graphics.h>
+
 void usb_init(void) {
 	uart_rx_pinassign(USB_UART, UART_RX_PORT, UART_RX_PIN);
 	uart_tx_pinassign(USB_UART, UART_TX_PORT, UART_TX_PIN);
@@ -22,5 +26,12 @@ void usb_init(void) {
 }
 
 void UART0_IRQHandler(void) {
-
+	_U08 data[32];
+	char *send = "Nice to meet you!";
+	uart_readBytes(USB_UART, data, 12);
+	uart_sendBytes(USB_UART, send, 17);
+	data[12] = '\0';
+	pm_clear_rectangle(0, 0, 127, 63);
+	pm_place_string((char *) data, 10, 10);
+	pm_write_buffer();
 }
