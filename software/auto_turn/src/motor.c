@@ -32,11 +32,14 @@ void motor_init(void) {
 	gpio_setPinMode(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, GPIO_MODE_NONE);
 	gpio_setPinValue(MOTOR_IN_2_PORT, MOTOR_IN_2_PIN, 0);
 
-//	Chip_IOCON_PinMuxSet(LPC_IOCON, POT_ADC_PORT, POT_ADC_PIN, IOCON_INPFILT_OFF);
 	adc_pinassign(POT_ADC_PORT, POT_ADC_PIN);
 }
 
-void motor_set(_U32 pos) {
+void motor_set_page(Page_t page) {
+
+}
+
+void motor_set_pos(_U32 pos) {
 	motor_pos = pos;
 	gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 1); // Turn on buck
 	// Set timer to sample pot and adjust motor periodically

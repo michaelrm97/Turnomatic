@@ -25,9 +25,12 @@
 
 int curr_selection;
 int curr_start;
+
+Bar_t last_bar;
+Page_t last_page;
 Note_t last_note = NO_NOTE;
 
-static void num2str(int n, char *s) {
+static int num2str(int n, char *s) {
 	if (n == 0) {
 		s[0] = '0';
 		s[1] = '\0';
@@ -38,59 +41,75 @@ static void num2str(int n, char *s) {
 		digits++;
 		num /= 10;
 	}
+	int ret = digits;
 	s[digits--] = '\0';
 	while (digits >= 0) {
 		s[digits--] = (n % 10) + '0';
 		n /= 10;
 	}
+	return ret;
 }
 
-static void update_bar_number(void) {
-	char str[4];
-	pm_clear_rectangle(11, 12, 57, 35);
-	num2str(curr_bar, str);
-	int x = 59 - 16 * strlen(str);
-	int i = 0;
-	while (str[i]) {
-		pm_place_image(digits[str[i] - '0'], x, 11);
-		i++;
-		x += 16;
-	}
-}
-
-static void update_page_number(void) {
-	char str[4];
-	pm_clear_rectangle(26, 39, 40, 62);
-	num2str(curr_page, str);
-	int x = 42 - 16 * strlen(str);
-	int i =  0;
-	while (str[i]) {
-		pm_place_image(digits[str[i] - '0'], x, 39);
-		i++;
-		x += 16;
-	}
-}
-
-static void update_note(Note_t n) {
-	pm_clear_rectangle(78, 39, 124, 62);
-	if (n != NO_NOTE) {
-		int x = 78;
+static bool update_bar_number(void) {
+	if (curr_bar != last_bar) {
+		last_bar = curr_bar;
+		char str[4];
+		pm_clear_rectangle(11, 12, 57, 35);
+		num2str(curr_bar, str);
+		int x = 59 - 16 * strlen(str);
 		int i = 0;
-		pm_place_image(note_images[(note_names[n][i] - 'A')], x, 39);
-		x += 16;
-		i++;
-		if (note_names[n][i] == 'S') {
-			pm_place_image(sharp, x, 39);
-			x += 16;
+		while (str[i]) {
+			pm_place_image(digits[str[i] - '0'], x, 11);
 			i++;
-		} else if (note_names[n][i] == 'b') {
-			pm_place_image(flat, x, 39);
 			x += 16;
-			i++;
 		}
-
-		pm_place_image(digits[(note_names[n][i] - '0')], x, 39);
+		return TRUE;
 	}
+	return FALSE;
+}
+
+static bool update_page_number(void) {
+	if (curr_page != last_page) {
+		last_page = curr_page;
+		char str[4];
+		pm_clear_rectangle(26, 39, 40, 62);
+		num2str(curr_page, str);
+		int x = 42 - 16 * strlen(str);
+		int i =  0;
+		while (str[i]) {
+			pm_place_image(digits[str[i] - '0'], x, 39);
+			i++;
+			x += 16;
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static bool update_note(void) {
+	if (curr_note != NO_NOTE && curr_note != last_note) {
+		pm_clear_rectangle(78, 39, 124, 62);
+		if (curr_note != NO_NOTE) {
+			int x = 78;
+			int i = 0;
+			pm_place_image(note_images[(note_names[curr_note][i] - 'A')], x, 39);
+			x += 16;
+			i++;
+			if (note_names[curr_note][i] == 'S') {
+				pm_place_image(sharp, x, 39);
+				x += 16;
+				i++;
+			} else if (note_names[curr_note][i] == 'b') {
+				pm_place_image(flat, x, 39);
+				x += 16;
+				i++;
+			}
+
+			pm_place_image(digits[(note_names[curr_note][i] - '0')], x, 39);
+		}
+		return TRUE;
+	}
+	return FALSE;
 }
 
 static void setup_play_display(char *name) {
@@ -124,11 +143,7 @@ static void setup_play_display(char *name) {
 	}
 	update_bar_number();
 	update_page_number();
-	Note_t n = track_update();
-	last_note = n;
-	if (n != NO_NOTE) {
-		update_note(n);
-	}
+	update_note();
 	pm_write_buffer();
 }
 
@@ -239,13 +254,67 @@ void user_mode_set(MODE smode) {
 }
 
 void user_update(void) {
-
-	Note_t n = track_update();
-	if (n != last_note && n != NO_NOTE) {
-		update_note(n);
-		last_note = n;
+	if (update_bar_number() || update_page_number() || update_note()) {
 		pm_write_buffer();
 	}
+}
+
+void user_enter_loading(char *name, _U32 total) {
+	char str[8];
+	pm_clear_rectangle(0, 0, 127, 63);
+	// Place loading + song name
+	pm_place_string("Loading:", 39, 6);
+	int x = 64 - 3 * strlen(name);
+	pm_place_string(name, x, 16);
+	pm_place_string("/", 61, 41);
+	num2str(total, str);
+	pm_place_string(str, 67, 41);
+	pm_place_string("0", 55, 41);
+	pm_write_buffer();
+}
+
+void user_enter_deleting(char *name) {
+	pm_clear_rectangle(0, 0, 127, 63);
+	// Place loading + song name
+	pm_place_string("Deleting:", 36, 6);
+	int x = 64 - 3 * strlen(name);
+	pm_place_string(name, x, 16);
+	pm_place_string("0%", 58, 41);
+	pm_write_buffer();
+}
+
+void user_update_loading(_U32 curr, _U32 total) {
+	char str[8];
+	int x = 61 - 6 * num2str(curr, str);
+	pm_clear_rectangle(x, 41, 60, 47);
+	pm_place_string(str, x, 41);
+	x = 14 + curr * 100 / total;
+	pm_fill_rectangle(13, 26, x, 37);
+	pm_write_buffer();
+}
+
+void user_update_deleting(_U08 percent) {
+	char str[8];
+	int len = num2str(percent, str);
+	str[len++] = '%';
+	str[len] = '\0';
+	int x = 64 - 3 * len;
+	pm_clear_rectangle(x, 41, x + 6 * len, 47);
+	pm_place_string(str, x, 41);
+	x = 14 + percent;
+	pm_fill_rectangle(13, 26, x, 37);
+	pm_write_buffer();
+}
+
+void user_exit_loading(void) {
+	pm_place_string("DONE!", 50, 51);
+	pm_write_buffer();
+	// Any button press will send back to stopped mode
+	gpio_enableInterrupt(RESTART_PININT, TRUE);
+	gpio_enableInterrupt(PAUSE_PININT, TRUE);
+	gpio_enableInterrupt(PLAY_PININT, TRUE);
+	gpio_enableInterrupt(UP_PININT, TRUE);
+	gpio_enableInterrupt(DOWN_PININT, TRUE);
 }
 
 // RESTART
@@ -258,11 +327,10 @@ void PIN_INT0_IRQHandler(void) {
 	case MODE_PAUSED:
 		if (curr_bar != 1) {
 		// Go back to bar 1
-			curr_bar = 1;
-			curr_page = 1;
-			update_bar_number();
-			update_page_number();
-			pm_write_buffer();
+			track_reset_bar();
+			if (update_bar_number() || update_page_number()) {
+				pm_write_buffer();
+			}
 			user_mode_set(MODE_PAUSED);
 			break;
 		} else {
@@ -276,7 +344,11 @@ void PIN_INT0_IRQHandler(void) {
 		display_song_list();
 		break;
 	case MODE_LOADING:
-		// Do nothing
+		user_mode_set(MODE_STOPPED);
+		// Display song list with first song selected
+		curr_selection = 0;
+		curr_start = 0;
+		display_song_list();
 		break;
 	}
 }
@@ -296,7 +368,11 @@ void PIN_INT1_IRQHandler(void) {
 		// Do nothing
 		break;
 	case MODE_LOADING:
-		// Do nothing
+		user_mode_set(MODE_STOPPED);
+		// Display song list with first song selected
+		curr_selection = 0;
+		curr_start = 0;
+		display_song_list();
 		break;
 	}
 }
@@ -323,7 +399,11 @@ void PIN_INT2_IRQHandler(void) {
 		}
 		break;
 	case MODE_LOADING:
-		// Do nothing
+		user_mode_set(MODE_STOPPED);
+		// Display song list with first song selected
+		curr_selection = 0;
+		curr_start = 0;
+		display_song_list();
 		break;
 	}
 }
@@ -337,11 +417,10 @@ void PIN_INT3_IRQHandler(void) {
 		break;
 	case MODE_PAUSED:
 		// Increase bar number
-		curr_bar++;
-		// Check if there's a need to change page
-		update_bar_number();
-		update_page_number();
-		pm_write_buffer();
+		track_increment_bar();
+		if (update_bar_number() || update_page_number()) {
+			pm_write_buffer();
+		}
 		break;
 	case MODE_STOPPED:
 		if (curr_selection > 0) {
@@ -353,7 +432,11 @@ void PIN_INT3_IRQHandler(void) {
 		}
 		break;
 	case MODE_LOADING:
-		// Do nothing
+		user_mode_set(MODE_STOPPED);
+		// Display song list with first song selected
+		curr_selection = 0;
+		curr_start = 0;
+		display_song_list();
 		break;
 	}
 }
@@ -367,13 +450,10 @@ void PIN_INT4_IRQHandler(void) {
 		break;
 	case MODE_PAUSED:
 		// Decrease bar number
-		if (curr_bar > 1) {
-			curr_bar--;
+		track_decrement_bar();
+		if (update_bar_number() || update_page_number()) {
+			pm_write_buffer();
 		}
-		// Check if there's a need to change page
-		update_bar_number();
-		update_page_number();
-		pm_write_buffer();
 		break;
 	case MODE_STOPPED:
 		// Move song select down
@@ -386,7 +466,11 @@ void PIN_INT4_IRQHandler(void) {
 		}
 		break;
 	case MODE_LOADING:
-		// Do nothing
+		user_mode_set(MODE_STOPPED);
+		// Display song list with first song selected
+		curr_selection = 0;
+		curr_start = 0;
+		display_song_list();
 		break;
 	}
 }

@@ -54,9 +54,6 @@ int main(void) {
     user_init();
     usb_init();
 
-//    gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 1); // Turn on buck
-//    gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 1); // Turn on buck
-
 	// Interrupt sources:
     // ADC
     // UART
@@ -64,6 +61,7 @@ int main(void) {
     // PININT 1-5
     while (1) {
     	if (mode == MODE_PLAYING) {
+    		track_update();
     		user_update();
     	}
     }

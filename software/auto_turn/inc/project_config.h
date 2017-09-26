@@ -40,5 +40,6 @@
 
 // MIC Settings
 #define MIC_ADC_CHANNEL 8
+#define MIC_THRESHOLD 1e10
 
 #endif /* PROJECT_CONFIG_H_ */

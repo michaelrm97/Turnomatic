@@ -22,7 +22,7 @@ typedef uint8_t Page_t;
 typedef uint16_t Bar_t;
 
 typedef struct {
-   Note_t notes;
+   Note_t notes[MAX_NOTES_IN_CHORD];
    uint8_t n;
    Duration_t dur;
    Bar_t bar;

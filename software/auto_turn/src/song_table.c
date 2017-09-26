@@ -10,6 +10,8 @@
 #include <song_table.h>
 #include <string.h>
 
+#include <user.h>
+
 int num_songs;
 int space_used;
 
@@ -59,10 +61,6 @@ int song_num(void) {
 	return num_songs;
 }
 
-int song_free_space(void) {
-	return 0;
-}
-
 Song song_load(int n) {
 	Song ret;
 	ret.chords = (Chord *)(dummy_table[n].flash_page * 256);
@@ -78,10 +76,10 @@ Song song_load(int n) {
 	return ret;
 }
 
-void song_store(void) {
-
+_U32 song_store(_U16 num_chords, Bar_t *page_breaks, char *name) {
+	return 0;
 }
 
-void song_delete(int n) {
-
+bool song_delete(int n) {
+	return TRUE;
 }
