@@ -38,10 +38,3 @@ _U32 flash_copy(_U32 addr, _U32 size) {
 void flash_read(_U32 addr, _U32 size) {
 	memcpy((void *)addr, (void *)flash_buffer, size);
 }
-
-void flash_pages(_U16 *used_pages, _U16 *free_pages) {
-	// Return number of free pages and used pages by reference
-	// For now return dummy values
-	*used_pages = 384;
-	*free_pages = 384;
-}

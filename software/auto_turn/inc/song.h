@@ -9,13 +9,9 @@
 #ifndef SONG_H
 #define SONG_H
 
-#include <notes.h>
+#include <project_config.h>
 
-#define MAX_NOTES_IN_CHORD 4
-#define MAX_CHORDS_IN_SONG 4096
-#define MAX_TURNS 4
-#define MAX_PAGES 5 // Number of pages (2 sheets side by side)
-// Equal to MAX_TURNS + 1
+#include <notes.h>
 
 typedef uint8_t Duration_t;
 typedef uint8_t Page_t;

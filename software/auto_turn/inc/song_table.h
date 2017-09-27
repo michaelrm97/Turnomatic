@@ -19,10 +19,11 @@ void song_table_init(void);
 
 char *song_name_get(int n);
 int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset);
-int song_num(void);
+_U16 song_num(void);
+_U16 song_used_pages(void);
 
 Song song_load(int n);
-_U32 song_store(_U16 num_chords, Bar_t *page_breaks, char *name);
+_U32 song_store(_U16 num_chords, Bar_t *page_break, char *name);
 bool song_delete(int n);
 
 #endif /* SONG_TABLE_H_ */

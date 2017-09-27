@@ -36,7 +36,8 @@ void motor_init(void) {
 }
 
 void motor_set_page(Page_t page) {
-
+	_U32 page_pos = MOTOR_PAGE1_POS + (page - 1) * MOTOR_PAGE_POS_DIFF;
+	motor_set_pos(page_pos);
 }
 
 void motor_set_pos(_U32 pos) {
