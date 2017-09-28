@@ -4,7 +4,7 @@
 #define FILTERS_H
 
 #include <stdint.h>
-#include "notes.h"
+#include <notes.h>
 
 typedef int16_t Sound_t; // 16 bits for sound input
 typedef float Filter_t; // Filter values
@@ -21,6 +21,10 @@ typedef float Power_t; // Average power of filter
 #define MIN_NOTE G3
 #define MAX_NOTE D6
 #define R_NOTE MAX_NOTE - MIN_NOTE + 1
+
+#define N_COMB  4    // Number of comb filter output values to store
+#define N_RES   4    // Number of resonator filter output values to store
+#define N_POWER 128  // Number of power values to store for each note
 
 // a2 and b1 coefficients of filter
 extern const float filter_coeff[R_NOTE];

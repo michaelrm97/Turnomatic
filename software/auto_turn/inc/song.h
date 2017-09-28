@@ -19,9 +19,9 @@ typedef uint16_t Bar_t;
 
 typedef struct {
    Note_t notes[MAX_NOTES_IN_CHORD];
-   uint8_t n;
-   Duration_t dur;
-   Bar_t bar;
+   uint8_t n;      // Number of notes in chord
+   Duration_t dur; // Duration in semi-quavers
+   Bar_t bar;      // Bar number of chord
 } Chord;
 
 typedef struct {

@@ -15,6 +15,7 @@ typedef enum {
 	MODE_LOADING
 } MODE;
 
+// Indicates the current mode the device is in
 extern MODE mode;
 
 #endif /* MODE_H_ */

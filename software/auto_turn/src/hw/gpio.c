@@ -6,8 +6,12 @@
  */
 
 #include <gpio.h>
-#include <iocon_5410x.h>
 
+#include <gpio_5410x.h>
+#include <iocon_5410x.h>
+#include <pinint_5410x.h>
+
+// Initialise gpio module
 void gpio_init(void) {
 	/* Enable clocks to all GPIO ports and input mux */
 	Chip_GPIO_Init(LPC_GPIO);
@@ -16,31 +20,39 @@ void gpio_init(void) {
 	Chip_PININT_Init(LPC_PININT);
 }
 
+// Set direction for an entire port
 void gpio_setPortDir(_U08 port, _U32 pinMask, GPIO_DIR direction) {
 	Chip_GPIO_SetPortDIR(LPC_GPIO, port, pinMask, direction);
 }
 
+// Set direction for a single pin
 void gpio_setPinDir(_U08 port, _U08 pin, GPIO_DIR direction) {
 	Chip_GPIO_SetPinDIR(LPC_GPIO, port, pin, direction);
 }
 
+// Set mode for a given pin
 void gpio_setPinMode(_U08 port, _U08 pin, GPIO_MODE mode) {
 	Chip_IOCON_PinMuxSet(LPC_IOCON, port, pin,
 							(IOCON_DIGITAL_EN | (mode << 3)));
 }
 
+// Set value for a given pin
 void gpio_setPinValue(_U08 port, _U08 pin, _U08 setting) {
 	Chip_GPIO_SetPinState(LPC_GPIO, port, pin, setting);
 }
 
+// Toggle pin value
 void gpio_togglePinValue(_U08 port, _U08 pin) {
 	Chip_GPIO_SetPinToggle(LPC_GPIO, port, pin);
 }
 
+// Get value for a given pin
 _U08 gpio_getValue(_U08 port, _U08 pin) {
 	return Chip_GPIO_GetPinState(LPC_GPIO, port, pin);
 }
 
+// Assign an interrupt for a particular pin and pinint channel
+// Takes in GPIO mode, and interrupt settings
 void gpio_assignInterrupt(_U08 port, _U08 pin,
 							_U08 channel,
 							GPIO_MODE mode,
@@ -85,6 +97,7 @@ void gpio_assignInterrupt(_U08 port, _U08 pin,
 
 }
 
+// Enable/ disable interrupt at a given pin
 void gpio_enableInterrupt(_U08 channel, bool enable) {
 	if (enable) {
 		Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(channel));

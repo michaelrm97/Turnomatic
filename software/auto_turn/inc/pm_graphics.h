@@ -32,16 +32,22 @@ typedef struct {
 	int height;
 } pm_image;
 
+// Internal buffer for PMOLED display
 extern _U08 pm_buffer[PM_HEIGHT/8][PM_WIDTH];
+
+// Array of characters
 extern _U08 (*font[NUM_CHARS])[CHAR_ROWS][CHAR_WIDTH];
 
+// Notes
 extern const pm_image note_images[NUM_NOTES];
 extern const pm_image sharp;
 extern const pm_image flat;
 
+// Large digits
 extern const pm_image digits[NUM_DIGITS];
 extern const pm_image slash1;
 
+// Draw basic shapes in pmoled buffer
 void pm_draw_pixel(int x, int y);
 void pm_clear_pixel(int x, int y);
 void pm_draw_hline(int x1, int x2, int y);
@@ -50,10 +56,12 @@ void pm_draw_rectangle(int x1, int y1, int x2, int y2);
 void pm_fill_rectangle(int x1, int y1, int x2, int y2);
 void pm_clear_rectangle(int x1, int y1, int x2, int y2);
 
+// Place image/ character/ string in pmoled buffer
 void pm_place_image(pm_image img, int x, int y);
 void pm_place_character(char c, int x, int y);
 void pm_place_string(char *s, int x, int y);
 
+// Invert section of pmoled buffer
 void pm_invert_section(int x1, int y1, int x2, int y2);
 
 #endif /* PM_GRAPHICS_H_ */

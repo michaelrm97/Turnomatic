@@ -20,6 +20,7 @@
 #include <user.h>
 #include <mode.h>
 
+// Convert array of bytes (little endian) into an unsigned int
 static _U32 bytes2int(_U08 *arr) {
 	_U32 ret = 0;
 	for (int i = 0; i < 4; i++) {
@@ -28,6 +29,7 @@ static _U32 bytes2int(_U08 *arr) {
 	return ret;
 }
 
+// Setup uart to interact with ftdi chip
 void usb_init(void) {
 	uart_rx_pinassign(USB_UART, UART_RX_PORT, UART_RX_PIN);
 	uart_tx_pinassign(USB_UART, UART_TX_PORT, UART_TX_PIN);
@@ -39,6 +41,8 @@ void usb_init(void) {
 
 }
 
+// Callback function for receiving message via uart from ftdi
+// Determines type of message then sends appropriate response
 void UART0_IRQHandler(void) {
 	// Check that we actually have data to receive
 	if (Chip_UART_GetStatus(USB_UART) & UART_STAT_RXRDY) {

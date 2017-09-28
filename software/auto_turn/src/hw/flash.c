@@ -6,11 +6,21 @@
  */
 
 #include <flash.h>
+
+#include <iap.h>
+
 #include <string.h>
 
 volatile _U08 flash_buffer[BUFFER_SIZE] __attribute__((aligned(PAGE_ALIGNMENT)));
 
+// Copy from flash_buffer in ram to flash at addr (must be page aligned)
+// Takes in a size to copy which must be either 256, 512, 1024 or 4096 bytes
+// Returns address immediately after written flash
 _U32 flash_copy(_U32 addr, _U32 size) {
+
+	if (addr < 0xF000) {
+		return addr; // Prevent accidental writing of code section
+	}
 
 	_U08 sector = addr >> 15; // divide by 32k
 	if (Chip_IAP_PreSectorForReadWrite(sector, sector) != IAP_CMD_SUCCESS) {
@@ -35,6 +45,8 @@ _U32 flash_copy(_U32 addr, _U32 size) {
 	}
 }
 
+// Copy from flash at addr to flash_buffer in ram (must be page aligned)
+// Takes in a size to read which must be either 256, 512, 1024 or 4096 bytes
 void flash_read(_U32 addr, _U32 size) {
 	memcpy((void *)addr, (void *)flash_buffer, size);
 }

@@ -5,16 +5,16 @@
  *      Author: Michael
  */
 
-#include <compiler.h>
-#include <string.h>
+#include <cr_section_macros.h>
 
 #include <song_table.h>
 #include <flash.h>
 
 #include <user.h>
+#include <string.h>
 
-_U16 num_songs;
-_U16 used_pages;
+static _U16 num_songs;
+static _U16 used_pages;
 
 #define SONG_TABLE ((Song_Entry *)(SONG_TABLE_BASE))
 #define SONG_DATA ((Chord_t *)(SONG_DATA_BASE))
@@ -26,6 +26,59 @@ typedef struct {
 	Bar_t page_break[MAX_TURNS];
 } Song_Entry;
 
+// Initial song table
+__DATA(Flash2) Song_Entry song_table[] = {
+		{"Twinkle Star", 256, 42, {9, 0 , 0, 0}}
+};
+
+// Initial song data
+__DATA(Flash3) Chord song_data[] = {
+		{{A4}, 1, 4, 1},
+		{{A4}, 1, 4, 1},
+		{{E5}, 1, 4, 1},
+		{{E5}, 1, 4, 1},
+		{{FS5}, 1, 4, 2},
+		{{FS5}, 1, 4, 2},
+		{{E5}, 1, 8, 2},
+		{{D5}, 1, 4, 3},
+		{{D5}, 1, 4, 3},
+		{{CS5}, 1, 4, 3},
+		{{CS5}, 1, 4, 3},
+		{{B4}, 1, 4, 4},
+		{{B4}, 1, 4, 4},
+		{{A4}, 1, 8, 4},
+		{{E5}, 1, 4, 5},
+		{{E5}, 1, 4, 5},
+		{{D5}, 1, 4, 5},
+		{{D5}, 1, 4, 5},
+		{{CS5}, 1, 4, 6},
+		{{CS5}, 1, 4, 6},
+		{{B4}, 1, 8, 6},
+		{{E5}, 1, 4, 7},
+		{{E5}, 1, 4, 7},
+		{{D5}, 1, 4, 7},
+		{{D5}, 1, 4, 7},
+		{{CS5}, 1, 4, 8},
+		{{CS5}, 1, 4, 8},
+		{{B4}, 1, 8, 8},
+		{{A4}, 1, 4, 9},
+		{{A4}, 1, 4, 9},
+		{{E5}, 1, 4, 9},
+		{{E5}, 1, 4, 9},
+		{{FS5}, 1, 4, 10},
+		{{FS5}, 1, 4, 10},
+		{{E5}, 1, 8, 10},
+		{{D5}, 1, 4, 11},
+		{{D5}, 1, 4, 11},
+		{{CS5}, 1, 4, 11},
+		{{CS5}, 1, 4,11},
+		{{B4}, 1, 4, 12},
+		{{B4}, 1, 4, 12},
+		{{A4}, 1, 8, 12}
+};
+
+// Initialise song table
+// Work out number of songs and used pages
 void song_table_init(void) {
 	int i;
 	for (i = 0; i < MAX_SONGS; i++) {
@@ -37,10 +90,15 @@ void song_table_init(void) {
 	used_pages = SONG_TABLE[i - 1].flash_page - SONG_DATA_PAGE + 1;
 }
 
+// Get name of song at index n of song table
 char *song_name_get(int n) {
 	return SONG_TABLE[n].name;
 }
-
+// Get list of song names
+// Place songs into passed in array
+// Places up to max names into array
+// Starts from offset index
+// Returns number of songs placed in array
 int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset) {
 	int n = 0;
 	while (offset < num_songs && n < max) {
@@ -51,14 +109,17 @@ int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset) {
 	return n;
 }
 
+// Return song number
 _U16 song_num(void) {
 	return num_songs;
 }
 
+// Return number of pages used by song data
 _U16 song_used_pages(void) {
 	return used_pages;
 }
 
+// Load song at given index from table
 Song song_load(int n) {
 	Song ret;
 	ret.chords = (Chord *)(SONG_TABLE[n].flash_page * 256);
@@ -74,8 +135,8 @@ Song song_load(int n) {
 	return ret;
 }
 
-// Add song to table
-// Returns address of initial flash memory page
+// Store song with given parameters in song table
+// Returns initial address to store song data
 _U32 song_store(_U16 num_chords, Bar_t *page_break, char *name) {
 	// Find first free page
 	_U32 start_page = SONG_DATA_PAGE + used_pages;
@@ -94,6 +155,8 @@ _U32 song_store(_U16 num_chords, Bar_t *page_break, char *name) {
 	return (start_page << 8);
 }
 
+// Delete song from song table
+// Returns whether delete was successful or not
 bool song_delete(int n) {
 	if (n >= num_songs) {
 		return FALSE;

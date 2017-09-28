@@ -5,18 +5,18 @@
  *      Author: Michael
  */
 
-#include <chip.h>
-
 #include <pindefs.h>
 #include <project_config.h>
 
+#include <note_tracker.h>
+
 #include <adc.h>
 #include <adc_5410x.h>
-
-#include <note_tracker.h>
 #include <filters.h>
 #include <motor.h>
 #include <user.h>
+
+#define NOTES_IN_OCTAVE 12
 
 Bar_t curr_bar;
 Bar_t max_bar;
@@ -25,20 +25,24 @@ Page_t max_page;
 
 Note_t curr_note;
 
-Song curr_song;
-_U32 curr_chord;
+static Song curr_song;
+static _U32 curr_chord;
 
+// Determine whether a note is located in a chord
+// Takes in target note, array of notes and number of notes in chord
 static bool note_in_chord(Note_t note, Note_t *notes, uint8_t n) {
 	for (int i = 0; i < n; i++) {
-		if (note == notes[i]) return TRUE;
+		if ((note % NOTES_IN_OCTAVE) == (notes[i] % NOTES_IN_OCTAVE)) return TRUE;
 	}
 	return FALSE;
 }
 
+// Initialize note tracking module
 void track_init(void) {
 	adc_pinassign(MIC_ADC_PORT, MIC_ADC_PIN);
 }
 
+// Reset bar back to 1
 void track_reset_bar(void) {
 	curr_bar = 1;
 	curr_page = 1;
@@ -46,6 +50,7 @@ void track_reset_bar(void) {
 	motor_set_page(1);
 }
 
+// Increment bar number by 1
 void track_increment_bar(void) {
 	if (curr_bar < max_bar) {
 		curr_bar++;
@@ -61,6 +66,7 @@ void track_increment_bar(void) {
 	}
 }
 
+// Decrement bar number by 1
 void track_decrement_bar(void) {
 	if (curr_bar > 1) {
 		curr_bar--;
@@ -76,10 +82,10 @@ void track_decrement_bar(void) {
 	}
 }
 
+// Set song to track
 void track_set_song(Song s) {
 	curr_bar = 1;
-	max_bar = 145;
-//	max_bar = s.chords[s.num_chords - 1].bar;
+	max_bar = s.chords[s.num_chords - 1].bar;
 	curr_page = 1;
 	max_page = s.num_pages;
 	curr_song = s;
@@ -87,15 +93,18 @@ void track_set_song(Song s) {
 	curr_chord = 0;
 }
 
+// Begin tracking a song
 void track_begin(void) {
 	filter_reset();
 	adc_set_periodic(F_SAMPLE, MIC_ADC_CHANNEL);
 }
 
+// Stop tracking a song
 void track_stop(void) {
 	adc_unset_periodic();
 }
 
+// Update position in song based on last note played
 void track_update(void) {
 	Note_t notes[1];
 	int num = filter_notes(notes, NULL, 1, MIC_THRESHOLD);
@@ -120,6 +129,8 @@ void track_update(void) {
 
 }
 
+// Callback function upon completion of adc read
+// Passes latest adc value into filter
 void ADC_SEQA_IRQHandler(void) {
 	Chip_ADC_ClearFlags(LPC_ADC, ADC_FLAGS_SEQA_INT_MASK);
 	Sound_t val = ADC_DR_RESULT(Chip_ADC_GetDataReg(LPC_ADC, MIC_ADC_CHANNEL));

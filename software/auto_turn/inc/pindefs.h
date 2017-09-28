@@ -49,8 +49,6 @@
 #define PM_CS_PORT 1
 #define PM_CS_PIN 15
 
-#define PM_CS 0
-
 // LEDs
 #define LED_PAUSED_PORT 1
 #define LED_PAUSED_PIN 4

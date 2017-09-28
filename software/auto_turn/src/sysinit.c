@@ -29,7 +29,7 @@
  * this code.
  */
 
-#include "chip.h"
+#include <chip.h>
 #include <project_config.h>
 
 /*****************************************************************************

@@ -10,13 +10,14 @@
 
 #include <motor.h>
 
-#include <timer.h>
 #include <adc.h>
-#include <sct.h>
 #include <gpio.h>
+#include <timer.h>
 
+// Target motor position
 _U32 motor_pos;
 
+// Initialise motor
 void motor_init(void) {
 
 	// Assign pins
@@ -35,11 +36,13 @@ void motor_init(void) {
 	adc_pinassign(POT_ADC_PORT, POT_ADC_PIN);
 }
 
+// Make the motor target a particular page
 void motor_set_page(Page_t page) {
 	_U32 page_pos = MOTOR_PAGE1_POS + (page - 1) * MOTOR_PAGE_POS_DIFF;
 	motor_set_pos(page_pos);
 }
 
+// Make the motor target a particular position (pot value)
 void motor_set_pos(_U32 pos) {
 	motor_pos = pos;
 	gpio_setPinValue(BUCK_EN_PORT, BUCK_EN_PIN, 1); // Turn on buck
@@ -47,6 +50,7 @@ void motor_set_pos(_U32 pos) {
 	timer_set_periodic(MOTOR_SAMPLE_PERIOD);
 }
 
+// Stop the motor
 void motor_stop(void) {
 	// Stop motor
 	gpio_setPinValue(MOTOR_IN_1_PORT, MOTOR_IN_1_PIN, 0);
@@ -55,6 +59,10 @@ void motor_stop(void) {
 	timer_unset_periodic(); // Stop sampling
 }
 
+// Motor interrupt handler
+// On first interrupt, pot value is read and motor pwm duty cycle is determined
+// Motor is set to turn in one direction and timer match register is set
+// To generate another interrupt which turns the motor off
 void CT32B2_IRQHandler(void) {
 	// Rudimentary control system
 	// In future will take derivative into account

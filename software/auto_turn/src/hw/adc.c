@@ -5,13 +5,13 @@
  *      Author: Michael
  */
 
-#include <chip.h>
-
 #include <adc.h>
+
 #include <sct.h>
 
 #include <adc_5410x.h>
 
+// Initialise adc module
 void adc_init(void) {
 
     sct_init();
@@ -33,14 +33,17 @@ void adc_init(void) {
 
 }
 
+// Deinitialise adc module
 void adc_deinit(void) {
 	Chip_ADC_DeInit(LPC_ADC);
 }
 
+// Set up a pin for analogue input mode
 void adc_pinassign(_U08 port, _U08 pin) {
 	Chip_IOCON_PinMuxSet(LPC_IOCON, port, pin, IOCON_INPFILT_OFF);
 }
 
+// Read one-off pin value for a particular channel
 _U16 adc_readPin(_U08 channel) {
 	// Do conversion of single channel
 	Chip_ADC_ClearSequencerBits(LPC_ADC, ADC_SEQB_IDX, ADC_SEQ_CTRL_CHANSEL_MASK);
@@ -54,6 +57,7 @@ _U16 adc_readPin(_U08 channel) {
 
 }
 
+// Set up a periodic reading of a particular channel
 void adc_set_periodic(_U32 frequency,_U08 channel) {
 	Chip_ADC_ClearSequencerBits(LPC_ADC, ADC_SEQA_IDX, ADC_SEQ_CTRL_CHANSEL_MASK);
 	Chip_ADC_SetSequencerBits(LPC_ADC, ADC_SEQA_IDX, ADC_SEQ_CTRL_CHANSEL(channel));
@@ -66,6 +70,7 @@ void adc_set_periodic(_U32 frequency,_U08 channel) {
 
 }
 
+// Unset periodic adc readings
 void adc_unset_periodic(void) {
 	sct_unset_periodic();
 	Chip_ADC_DisableSequencer(LPC_ADC, ADC_SEQA_IDX);

@@ -8,13 +8,13 @@
 #ifndef SCT_H_
 #define SCT_H_
 
+#include <chip.h>
 #include <compiler.h>
 
-// Use SCT_LOW for ADC
-// Use SCT_HIGH for PWM
-
+// Initialise sct module
 void sct_init(void);
 
+// Set/ unset sct to tick at a given frequency
 void sct_set_periodic(_U32 frequency);
 void sct_unset_periodic(void);
 

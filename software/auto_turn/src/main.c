@@ -12,30 +12,26 @@
 ===============================================================================
 */
 
-#include "chip.h"
+#include <chip.h>
+#include <compiler.h>
 
 #include <cr_section_macros.h>
 
 #include <pindefs.h>
 #include <project_config.h>
 
-// Hardware include files
 #include <gpio.h>
 #include <timer.h>
 #include <sct.h>
 #include <adc.h>
 
-#include <pm_graphics.h>
-#include <pmoleds.h>
-#include <user.h>
-#include <motor.h>
-#include <usb.h>
-#include <filters.h>
-#include <song_table.h>
-#include <note_tracker.h>
-#include <notes.h>
-
 #include <mode.h>
+
+#include <song_table.h>
+#include <motor.h>
+#include <note_tracker.h>
+#include <user.h>
+#include <usb.h>
 
 MODE mode;
 
@@ -54,11 +50,7 @@ int main(void) {
     user_init();
     usb_init();
 
-	// Interrupt sources:
-    // ADC
-    // UART
-    // Timer
-    // PININT 1-5
+    // Main loop
     while (1) {
     	if (mode == MODE_PLAYING) {
     		track_update();

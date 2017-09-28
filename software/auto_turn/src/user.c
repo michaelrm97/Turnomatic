@@ -18,18 +18,23 @@
 #include <song_table.h>
 
 #include <string.h>
-#include <ctype.h>
 
 #define MAX_STR_LEN 32
 #define MAX_SONGS_DISPLAY 8
 
-int curr_selection;
-int curr_start;
+// Current selection of song
+static int curr_selection;
+// First song shown on screen
+static int curr_start;
 
-Bar_t last_bar;
-Page_t last_page;
-Note_t last_note = NO_NOTE;
+// Previous values displayed on screen
+static Bar_t last_bar;
+static Page_t last_page;
+static Note_t last_note = NO_NOTE;
 
+// Converts a number into a string
+// Places result in s
+// Returns number of digits
 static int num2str(int n, char *s) {
 	if (n == 0) {
 		s[0] = '0';
@@ -50,6 +55,8 @@ static int num2str(int n, char *s) {
 	return ret;
 }
 
+// Updates bar number
+// Returns true if changes actually made
 static bool update_bar_number(void) {
 	if (curr_bar != last_bar) {
 		last_bar = curr_bar;
@@ -68,6 +75,8 @@ static bool update_bar_number(void) {
 	return FALSE;
 }
 
+// Updates page number
+// Returns true if changes actually made
 static bool update_page_number(void) {
 	if (curr_page != last_page) {
 		last_page = curr_page;
@@ -86,6 +95,8 @@ static bool update_page_number(void) {
 	return FALSE;
 }
 
+// Updates note
+// Returns true if changes actually made
 static bool update_note(void) {
 	if (curr_note != NO_NOTE && curr_note != last_note) {
 		pm_clear_rectangle(78, 39, 124, 62);
@@ -112,6 +123,7 @@ static bool update_note(void) {
 	return FALSE;
 }
 
+// Setup what will be displayed whilst song is playing
 static void setup_play_display(char *name) {
 	pm_clear_rectangle(0, 0, 127, 63);
 	pm_place_string(name, 1, 1);
@@ -147,6 +159,7 @@ static void setup_play_display(char *name) {
 	pm_write_buffer();
 }
 
+// Display list of songs to select
 static void display_song_list(void) {
 
 	pm_clear_rectangle(0, 0, 127, 63);
@@ -163,6 +176,8 @@ static void display_song_list(void) {
 
 }
 
+// Initialise user interface functions
+// Including buttons and PMOLED display
 void user_init(void) {
 
 	// Setup LEDs
@@ -207,6 +222,8 @@ void user_init(void) {
 
 }
 
+// Set a given mode
+// Activates/ deactivates relevant buttons and sets mode
 void user_mode_set(MODE smode) {
 	mode = smode;
 	switch(smode) {
@@ -253,12 +270,18 @@ void user_mode_set(MODE smode) {
 	}
 }
 
+// Updates display whilst song is being played
+// With new note, bar and page numbers
 void user_update(void) {
-	if (update_bar_number() || update_page_number() || update_note()) {
+	bool update = update_bar_number();
+	update = update_page_number() || update;
+	update = update_note() || update;
+	if (update) {
 		pm_write_buffer();
 	}
 }
 
+// Setup song loading info on screen
 void user_enter_loading(char *name, _U32 total) {
 	char str[8];
 	pm_clear_rectangle(0, 0, 127, 63);
@@ -273,6 +296,7 @@ void user_enter_loading(char *name, _U32 total) {
 	pm_write_buffer();
 }
 
+// Setup song deletion info on screen
 void user_enter_deleting(char *name) {
 	pm_clear_rectangle(0, 0, 127, 63);
 	// Place loading + song name
@@ -283,6 +307,7 @@ void user_enter_deleting(char *name) {
 	pm_write_buffer();
 }
 
+// Update progress of song loading on screen
 void user_update_loading(_U32 curr, _U32 total) {
 	char str[8];
 	int x = 61 - 6 * num2str(curr, str);
@@ -293,6 +318,7 @@ void user_update_loading(_U32 curr, _U32 total) {
 	pm_write_buffer();
 }
 
+// Update progress of song deletion on screen
 void user_update_deleting(_U08 percent) {
 	char str[8];
 	int len = num2str(percent, str);
@@ -306,6 +332,7 @@ void user_update_deleting(_U08 percent) {
 	pm_write_buffer();
 }
 
+// Finished with song loading/ deletion so display "DONE!" and reactivate buttons
 void user_exit_loading(void) {
 	pm_place_string("DONE!", 50, 51);
 	pm_write_buffer();

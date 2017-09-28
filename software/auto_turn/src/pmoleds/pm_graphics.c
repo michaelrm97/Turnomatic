@@ -10,18 +10,21 @@
 
 _U08 pm_buffer[PM_HEIGHT/8][PM_WIDTH];
 
+// Draw single pixel
 void pm_draw_pixel(int x, int y) {
 	if (x >= 0 && y >= 0 && x < PM_WIDTH && y < PM_HEIGHT) {
 		pm_buffer[y / 8][x] |= (1 << (y % 8));
 	}
 }
 
+// Clear single pixel
 void pm_clear_pixel(int x, int y) {
 	if (x >= 0 && y >= 0 && x < PM_WIDTH && y < PM_HEIGHT) {
 		pm_buffer[y / 8][x] &= ~(1 << (y % 8));
 	}
 }
 
+// Draw horizontal line
 void pm_draw_hline(int x1, int x2, int y) {
 	if (x1 < 0) {
 		x1 = 0;
@@ -38,6 +41,7 @@ void pm_draw_hline(int x1, int x2, int y) {
 	}
 }
 
+// Draw vertical line
 void pm_draw_vline(int x, int y1, int y2) {
 	if (y1 < 0) {
 		y1 = 0;
@@ -54,6 +58,7 @@ void pm_draw_vline(int x, int y1, int y2) {
 	}
 }
 
+// Draw a rectangle
 void pm_draw_rectangle(int x1, int y1, int x2, int y2) {
 	pm_draw_hline(x1, x2, y1);
 	pm_draw_hline(x1, x2, y2);
@@ -61,6 +66,7 @@ void pm_draw_rectangle(int x1, int y1, int x2, int y2) {
 	pm_draw_vline(x2, y1, y2);
 }
 
+// Fill a rectangle
 void pm_fill_rectangle(int x1, int y1, int x2, int y2) {
 	int page_start = y1 / 8;
 	if (y1 < 0) {
@@ -91,6 +97,7 @@ void pm_fill_rectangle(int x1, int y1, int x2, int y2) {
 	}
 }
 
+// Clear a rectangular area
 void pm_clear_rectangle(int x1, int y1, int x2, int y2) {
 	int page_start = y1 / 8;
 	if (y1 < 0) {
@@ -121,6 +128,7 @@ void pm_clear_rectangle(int x1, int y1, int x2, int y2) {
 	}
 }
 
+// Place an image at specified location
 void pm_place_image(pm_image img, int x, int y) {
 	int page_start = y / 8;
 	int shift = y % 8;
@@ -169,10 +177,9 @@ void pm_place_image(pm_image img, int x, int y) {
 	}
 }
 
+// Place character at specified location
 void pm_place_character(char c, int x, int y) {
-
 	pm_image img;
-
 	if (c >= 0 && c < NUM_CHARS) {
 		if (font[(int) c] != NULL) {
 			img.img = font[(int) c];
@@ -181,9 +188,9 @@ void pm_place_character(char c, int x, int y) {
 			pm_place_image(img, x, y);
 		}
 	}
-
 }
 
+// Place string at specified location
 void pm_place_string(char *s, int x, int y) {
 	int start_col = x;
 	while (*s != '\0') {
@@ -208,6 +215,7 @@ void pm_place_string(char *s, int x, int y) {
 	}
 }
 
+// Invert section of pmoled buffer
 void pm_invert_section(int x1, int y1, int x2, int y2) {
 	int page_start = y1 / 8;
 	if (y1 < 0) {

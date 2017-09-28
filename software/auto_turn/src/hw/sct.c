@@ -6,16 +6,18 @@
  */
 
 #include <sct.h>
+
 #include <gpio.h>
 
 #include <sct_5410x.h>
 
+// Initialise sct module
 void sct_init(void) {
 	Chip_SCT_Init(LPC_SCT0);
 	Chip_SCT_Config(LPC_SCT0, SCT_CONFIG_32BIT_COUNTER | SCT_CONFIG_AUTOLIMIT_L);
 }
 
-// Period in 0.5us
+// Set sct to tick at a given frequency
 void sct_set_periodic(_U32 frequency) {
 	Chip_SCT_SetMatchCount(LPC_SCT, SCT_MATCH_0, SystemCoreClock / frequency);
 	Chip_SCT_SetMatchReload(LPC_SCT, SCT_MATCH_0, SystemCoreClock / frequency);
@@ -34,6 +36,7 @@ void sct_set_periodic(_U32 frequency) {
 	Chip_SCT_ClearControl(LPC_SCT, SCT_CTRL_HALT_L);
 }
 
+// Unset periodic ticking
 void sct_unset_periodic(void) {
 	Chip_SCT_SetControl(LPC_SCT, SCT_CTRL_HALT_L);
 }

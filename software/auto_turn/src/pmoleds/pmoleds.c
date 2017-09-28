@@ -6,12 +6,13 @@
  */
 
 #include <pindefs.h>
+#include <project_config.h>
 
 #include <pmoleds.h>
 #include <pm_graphics.h>
 
-#include <spi.h>
 #include <gpio.h>
+#include <spi.h>
 #include <timer.h>
 
 // Relevant constants for commands
@@ -36,19 +37,17 @@
 #define SSD1306_SET_COL_ADDRESS 0x21
 #define SSD1306_SET_PAGE_ADDRESS 0x22
 
+// Send a single command to screen
 static void pm_command(_U08 *command, _U08 num_bytes) {
-
 	gpio_setPinValue(PM_DC_PORT, PM_DC_PIN, PM_WRITE_COMMAND); // Set to write command
 	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_ENABLE);
 	spi_sendBytes(PM_SPI, command, num_bytes);
 	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
-
 }
 
-// Public functions for actually writing to PMOLEDS via SPI
-// Initialize PMOLEDs
+// Public functions for actually writing to PMOLED via SPI
+// Initialize screen
 void pm_init(void) {
-
 	spi_sck_pinassign(PM_SPI, PM_CLK_PORT, PM_CLK_PIN);
 	spi_mosi_pinassign(PM_SPI, PM_MOSI_PORT, PM_MOSI_PIN);
 	spi_init(PM_SPI, PM_SPI_BITRATE, SPI_CLOCK_MODE0, SPI_DATA_MSB_FIRST);
@@ -83,7 +82,7 @@ void pm_init(void) {
 		{0xA6, 0x00}, // Set normal display
 		{0xD5, 0x80}, // Set oscillator frequency
 		{0x8D, 0x14}, // Enable charge pump regulator
-		{0xAF, 0x00} // Display on
+		{0xAF, 0x00}  // Display on
 	};
 
 	_U08 command_sizes_ssd1306[SSD1306_NUM_INIT_COMMANDS] = {2, 2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1};
@@ -91,9 +90,9 @@ void pm_init(void) {
 	for (int i = 0; i < SSD1306_NUM_INIT_COMMANDS; i++) {
 		pm_command(commands_ssd1306[i], command_sizes_ssd1306[i]);
 	}
-
 }
 
+// Set contrast level for screen
 void pm_set_contrast(_U08 level) {
 	_U08 command[2];
 
@@ -103,6 +102,7 @@ void pm_set_contrast(_U08 level) {
 	return pm_command(command, 2);
 }
 
+// Clear screen
 void pm_clear(void) {
 	_U08 command[3];
 	_U08 data[MAX_CONSECUTIVE_BYTES] = {0};
@@ -138,6 +138,7 @@ void pm_clear(void) {
 	gpio_setPinValue(PM_CS_PORT, PM_CS_PIN, PM_CS_DISABLE);
 }
 
+// Write buffer to screen
 void pm_write_buffer(void) {
 	_U08 command[3];
 

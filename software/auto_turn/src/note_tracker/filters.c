@@ -1,14 +1,8 @@
 // Filter bank used to estimate notes
 
-#include "filters.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include <filters.h>
 
-#define N_COMB  4    // Number of comb filter output values to store
-#define N_RES   4    // Number of resonator filter output values to store
-#define N_POWER 128 // Number of power values to store for each note
-
-static Sound_t filter_values[N_FILTER];  // Last N_FILTER values of input
+static Sound_t filter_values[N_FILTER]; // Last N_FILTER values of input
 static Filter_t comb[N_COMB];           // Last N_COMB comb filter outputs
 static Filter_t res[R_NOTE][N_RES];     // Last N_RES resonator output values for each note
 static Power_t powers[R_NOTE][N_POWER]; // Last N_POWER power values for each note
@@ -87,6 +81,9 @@ Power_t get_power(Note_t note) {
 }
 
 // Finds the notes with the maximal power values
+// Returns number of notes with power above a given threshold
+// Returns notes and power by reference
+// num is the size of the notes and powers arrays
 uint8_t filter_notes(Note_t *notes, Power_t *powers, uint8_t num, float threshold) {
     Power_t sort[num];
     uint8_t count = 0;
