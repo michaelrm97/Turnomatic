@@ -27,12 +27,11 @@ typedef struct {
 } Song_Entry;
 
 // Initial song table
-__DATA(Flash2) Song_Entry song_table[] = {
+__RODATA(Flash2) const Song_Entry song_table[MAX_SONGS] = {
 		{"Twinkle Star", 256, 42, {9, 0 , 0, 0}}
 };
 
-// Initial song data
-__DATA(Flash3) Chord song_data[] = {
+__RODATA(Flash3) const Chord song_data[MAX_CHORDS] = {
 		{{A4}, 1, 4, 1},
 		{{A4}, 1, 4, 1},
 		{{E5}, 1, 4, 1},
@@ -82,17 +81,22 @@ __DATA(Flash3) Chord song_data[] = {
 void song_table_init(void) {
 	int i;
 	for (i = 0; i < MAX_SONGS; i++) {
-		if (SONG_TABLE[i].num_chords == 0) {
+		if (song_table[i].num_chords == 0) {
 			break;
 		}
 	}
 	num_songs = i;
-	used_pages = SONG_TABLE[i - 1].flash_page - SONG_DATA_PAGE + 1;
+	for (i = 0; i < MAX_CHORDS; i+= CHORDS_IN_PAGE) {
+		if (song_data[i].dur == 0) {
+			break;
+		}
+	}
+	used_pages = i >> 5;
 }
 
 // Get name of song at index n of song table
 char *song_name_get(int n) {
-	return SONG_TABLE[n].name;
+	return song_table[n].name;
 }
 // Get list of song names
 // Place songs into passed in array
@@ -102,7 +106,7 @@ char *song_name_get(int n) {
 int song_list_get(char (*names)[MAX_SONG_LEN], int max, int offset) {
 	int n = 0;
 	while (offset < num_songs && n < max) {
-		strcpy(names[n], SONG_TABLE[offset].name);
+		strcpy(names[n], song_table[offset].name);
 		offset++;
 		n++;
 	}
@@ -122,14 +126,14 @@ _U16 song_used_pages(void) {
 // Load song at given index from table
 Song song_load(int n) {
 	Song ret;
-	ret.chords = (Chord *)(SONG_TABLE[n].flash_page * 256);
-	ret.num_chords = SONG_TABLE[n].num_chords;
+	ret.chords = (Chord *)(song_table[n].flash_page * 256);
+	ret.num_chords = song_table[n].num_chords;
 	int i = 0;
 	for (i = 0; i < 4; i++) {
-		if (!SONG_TABLE[i].page_break[i]) {
+		if (!song_table[i].page_break[i]) {
 			break;
 		}
-		ret.page_break[i] = SONG_TABLE[n].page_break[i];
+		ret.page_break[i] = song_table[n].page_break[i];
 	}
 	ret.num_pages = i + 1;
 	return ret;
@@ -164,7 +168,7 @@ bool song_delete(int n) {
 	_U32 del_pages = (SONG_TABLE[n].num_chords + 31) >> 5;
 	if (n < num_songs - 1) {
 		// Move all the data down
-		_U32 start_page = SONG_TABLE[n + 1].flash_page;
+		_U32 start_page = song_table[n + 1].flash_page;
 		_U32 end_page = used_pages + SONG_DATA_PAGE;
 		int work = end_page - start_page + 1;
 		int complete = 0;

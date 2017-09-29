@@ -52,6 +52,8 @@
 #define SONG_DATA_BASE 0x10000
 #define SONG_TABLE_SIZE 4096
 #define MAX_SONGS 128
+#define MAX_CHORDS 24576
+#define CHORDS_IN_PAGE 32
 #define TOTAL_PAGES 0x300
 
 #define COPY_SIZE 256 // For simplicity only copy 256 bytes at a time

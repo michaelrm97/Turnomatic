@@ -30,7 +30,7 @@ static int curr_start;
 // Previous values displayed on screen
 static Bar_t last_bar;
 static Page_t last_page;
-static Note_t last_note = NO_NOTE;
+static Note_t last_note;
 
 // Converts a number into a string
 // Places result in s
@@ -153,6 +153,9 @@ static void setup_play_display(char *name) {
 		i++;
 		x += 16;
 	}
+	last_bar = 0;
+	last_page = 0;
+	last_note = NO_NOTE;
 	update_bar_number();
 	update_page_number();
 	update_note();
@@ -445,7 +448,9 @@ void PIN_INT3_IRQHandler(void) {
 	case MODE_PAUSED:
 		// Increase bar number
 		track_increment_bar();
-		if (update_bar_number() || update_page_number()) {
+		bool update = update_bar_number();
+		update = update_page_number() || update;
+		if (update) {
 			pm_write_buffer();
 		}
 		break;
@@ -478,7 +483,9 @@ void PIN_INT4_IRQHandler(void) {
 	case MODE_PAUSED:
 		// Decrease bar number
 		track_decrement_bar();
-		if (update_bar_number() || update_page_number()) {
+		bool update = update_bar_number();
+		update = update_page_number() || update;
+		if (update) {
 			pm_write_buffer();
 		}
 		break;

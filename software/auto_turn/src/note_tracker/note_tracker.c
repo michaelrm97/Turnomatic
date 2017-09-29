@@ -58,7 +58,7 @@ void track_increment_bar(void) {
 		while (curr_song.chords[curr_chord].bar < curr_bar) {
 			curr_chord++;
 		}
-		if (curr_bar >= curr_song.page_break[curr_page - 1]) {
+		if (curr_page < max_page && curr_bar >= curr_song.page_break[curr_page - 1]) {
 			curr_page++;
 			// Set motor position
 			motor_set_page(curr_page);
@@ -106,6 +106,11 @@ void track_stop(void) {
 
 // Update position in song based on last note played
 void track_update(void) {
+	if (curr_chord >= curr_song.num_chords) {
+		track_stop();
+		user_mode_set(MODE_PAUSED);
+		return;
+	}
 	Note_t notes[1];
 	int num = filter_notes(notes, NULL, 1, MIC_THRESHOLD);
 	if (num > 0) {
@@ -117,12 +122,13 @@ void track_update(void) {
 		curr_chord++;
 		if (curr_chord < curr_song.num_chords) {
 			curr_bar = curr_song.chords[curr_chord].bar;
-			if (curr_bar >= curr_song.page_break[curr_page - 1]) {
+			if (curr_page < max_page && curr_bar >= curr_song.page_break[curr_page - 1]) {
 				curr_page++;
 				// Set motor position
 				motor_set_page(curr_page);
 			}
 		} else {
+			track_stop();
 			user_mode_set(MODE_PAUSED);
 		}
 	}
@@ -133,6 +139,5 @@ void track_update(void) {
 // Passes latest adc value into filter
 void ADC_SEQA_IRQHandler(void) {
 	Chip_ADC_ClearFlags(LPC_ADC, ADC_FLAGS_SEQA_INT_MASK);
-	Sound_t val = ADC_DR_RESULT(Chip_ADC_GetDataReg(LPC_ADC, MIC_ADC_CHANNEL));
-	filter_input(val);
+	filter_input(ADC_DR_RESULT(Chip_ADC_GetDataReg(LPC_ADC, MIC_ADC_CHANNEL)));
 }

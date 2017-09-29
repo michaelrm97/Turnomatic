@@ -137,7 +137,7 @@ void pm_place_image(pm_image img, int x, int y) {
 		shift += 8;
 	}
 
-	int img_height =img.height;
+	int img_height = img.height;
 	int img_width = img.width;
 	int rows = (img_height + 7) / 8;
 
