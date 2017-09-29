@@ -5,8 +5,124 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Turnomatic_Loader"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Turnomatic Loader" Height="420" Width="550" MinHeight="420" MinWidth="550">
+    <Window.CommandBindings>
+        <CommandBinding Command="local:CustomCommands.DelSong" Executed="DelSongCommand_Executed" CanExecute="DelSongCommand_CanExecute" />
+        <CommandBinding Command="local:CustomCommands.LoadSong" Executed="LoadSongCommand_Executed" CanExecute="LoadSongCommand_CanExecute" />
+    </Window.CommandBindings>
     <Grid>
+        <Grid.Resources>
+            <Style x:Key="lineStyle" TargetType="Line">
+                <Setter Property="Stroke" Value="Gray" />
+                <Setter Property="Stretch" Value="Fill" />
+                <Setter Property="Grid.ZIndex" Value="100" />
+                <Setter Property="StrokeDashArray" Value="1,2" />
+            </Style>
+
+            <Style x:Key="verticalLineStyle" TargetType="Line" BasedOn="{StaticResource lineStyle}">
+                <Setter Property="Y2" Value="1" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="Grid.RowSpan"   
+                    Value="{Binding   
+                                Path=RowDefinitions.Count,  
+                                RelativeSource={RelativeSource AncestorType=Grid}}"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
         
+        <Line Grid.Column="0" Style="{StaticResource verticalLineStyle}"/>
+
+        <StackPanel Margin="10px" Orientation="Vertical" Grid.Column="0">
+            <TextBlock FontSize="20px" Margin="4px" Padding="0,0,0,10">Connect with device</TextBlock>
+            <WrapPanel>
+                <Button Name="scanDevice" Width="100px" Padding="4px" Margin="4px" Click="btn_scanDevice">Scan for device</Button>
+                <TextBlock Name="foundDevice" VerticalAlignment="Center" Text=""/>
+            </WrapPanel>
+            <Label Content="Songs on device:" Target="{Binding ElementName=songList}" />
+            <ScrollViewer Name="songList" Margin="4px" VerticalScrollBarVisibility="Visible" Height="200px">
+                <ListBox Name="songListBox" IsEnabled="False">
+                    <!--<ListBoxItem>
+                        Twinkle Star
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        Country Road
+                    </ListBoxItem>-->
+                </ListBox>
+            </ScrollViewer>
+            <DockPanel Margin="4px">
+                <StackPanel Orientation="Vertical">
+                    <WrapPanel>
+                        <TextBlock Name ="numSongsBox" Width="40px" TextAlignment="Right" Text="-"/>
+                        <TextBlock Text="/"/>
+                        <TextBlock Name ="maxSongsBox" Width="40px" Text="-"/>
+                        <TextBlock Text="songs"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock Name ="usedSpaceBox" Width="40px" TextAlignment="Right" Text="-"/>
+                        <TextBlock Text="/"/>
+                        <TextBlock Name ="totalSpaceBox" Width="40px" Text="-"/>
+                        <TextBlock Text="kB"/>
+                    </WrapPanel>
+                </StackPanel>
+                <Button Name ="deleteBtn" Width="60px" Padding="4px" Margin="4px" HorizontalAlignment="Right" Command="local:CustomCommands.DelSong">
+                    Delete
+                </Button>
+            </DockPanel>
+        </StackPanel>
+        <StackPanel Margin="10px" Orientation="Vertical" Grid.Column="1">
+            <TextBlock FontSize="20px" Margin="4px" Padding="0,0,0,10">Add new song</TextBlock>
+            <DockPanel Margin="4px">
+                <Button DockPanel.Dock="Right" Click="btn_browse">Browse...</Button>
+                <TextBox Name="fileNameBox" IsEnabled="False" DockPanel.Dock="Left" Text="Select MIDI file" />
+            </DockPanel>
+            <WrapPanel Margin="4px">
+                <TextBlock Width="80px" Text="Song Length:"/>
+                <TextBlock Name="songLengthBox" Text="-"/>
+            </WrapPanel>
+            <WrapPanel Margin="4px">
+                <TextBlock Width="80px" Text="Song Size:"/>
+                <TextBlock Name="songSizeBox" Text="-"/>
+            </WrapPanel>
+            <DockPanel Margin="0,10,4,10">
+                <Label DockPanel.Dock="Left" Content="Song Name" Target="{Binding ElementName=songName}"/>
+                <TextBox DockPanel.Dock="Right" Name="songName" VerticalAlignment="Center" MaxLength="19" IsEnabled="False"/>
+            </DockPanel>
+            <WrapPanel Margin="0,0,4,0">
+                <Label Width="120px" Content="Number of pages" Target="{Binding ElementName=numPagesBox}"/>
+                <ComboBox Name="numPagesBox" SelectedIndex="0" SelectionChanged="comb_sel" IsEnabled="False">
+                    <ComboBoxItem>1</ComboBoxItem>
+                    <ComboBoxItem>2</ComboBoxItem>
+                    <ComboBoxItem>3</ComboBoxItem>
+                    <ComboBoxItem>4</ComboBoxItem>
+                    <ComboBoxItem>5</ComboBoxItem>
+                </ComboBox>
+            </WrapPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label Width="80px" DockPanel.Dock="Left" Content="Page break 1" Target="{Binding ElementName=break1}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" IsEnabled="False" Width="40px" Name="break1"/>
+                <TextBlock Width="40px" Padding="4px" DockPanel.Dock="Right" VerticalAlignment="Center" TextAlignment="Right" Text="Bar"/>
+            </DockPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label Width="80px" DockPanel.Dock="Left" Content="Page break 2" Target="{Binding ElementName=break2}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" IsEnabled="False" Width="40px" Name="break2"/>
+                <TextBlock Width="40px" Padding="4px" DockPanel.Dock="Right" VerticalAlignment="Center" TextAlignment="Right" Text="Bar"/>
+            </DockPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label Width="80px" DockPanel.Dock="Left" Content="Page break 3" Target="{Binding ElementName=break3}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" IsEnabled="False" Width="40px" Name="break3"/>
+                <TextBlock Width="40px" Padding="4px" DockPanel.Dock="Right" VerticalAlignment="Center" TextAlignment="Right" Text="Bar"/>
+            </DockPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label Width="80px" DockPanel.Dock="Left" Content="Page break 4" Target="{Binding ElementName=break4}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" IsEnabled="False" Width="40px" Name="break4"/>
+                <TextBlock Width="40px" Padding="4px" DockPanel.Dock="Right" VerticalAlignment="Center" TextAlignment="Right" Text="Bar"/>
+            </DockPanel>
+            <Button Width="60px" Padding="4px" Margin="4px" HorizontalAlignment="Right" Command="local:CustomCommands.LoadSong">
+                Load
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>

@@ -11,8 +11,46 @@ namespace Turnomatic_Loader
     class UsbConnection
     {
         private FTDI device = new FTDI();
+
+        private short numSongs = 0;
+        private short usedPages = 0;
+        private short maxSongs = 0;
+        private short totalPages = 0;
+
         private List<String> songNames = new List<String>();
         
+        public short NumSongs {
+            get {
+                return numSongs;
+            }
+        }
+
+        public short MaxSongs {
+            get {
+                return maxSongs;
+            }
+        }
+
+        // Return used space in kB
+        public double UsedSpace {
+            get {
+                return usedPages / 4.0;
+            }
+        }
+
+        // Return total space in kB
+        public double TotalSpace {
+            get {
+                return totalPages / 4.0;
+            }
+        }
+
+        public List<String> SongNames {
+            get {
+                return songNames;
+            }
+        }
+
         public bool OpenDevice()
         {
             UInt32 ftdiDeviceCount = 0;
@@ -82,6 +120,21 @@ namespace Turnomatic_Loader
         {
             FTDI.FT_STATUS ftStatus = device.Close();
             return (ftStatus == FTDI.FT_STATUS.FT_OK);
+        }
+
+        public bool GetSongList()
+        {
+            return true;
+        }
+
+        public bool AddSong(Song s, byte[] page_breaks, String name)
+        {
+            return true;
+        }
+
+        public bool DeleteSong(int num)
+        {
+            return true;
         }
 
     }
