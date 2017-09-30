@@ -43,14 +43,7 @@
             </WrapPanel>
             <Label Content="Songs on device:" Target="{Binding ElementName=songList}" />
             <ScrollViewer Name="songList" Margin="4px" VerticalScrollBarVisibility="Visible" Height="200px">
-                <ListBox Name="songListBox" IsEnabled="False">
-                    <!--<ListBoxItem>
-                        Twinkle Star
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        Country Road
-                    </ListBoxItem>-->
-                </ListBox>
+                <ListBox Name="songListBox" IsEnabled="False"/>
             </ScrollViewer>
             <DockPanel Margin="4px">
                 <StackPanel Orientation="Vertical">

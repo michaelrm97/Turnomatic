@@ -25,11 +25,10 @@ void user_mode_set(MODE smode);
 // With new note, bar and page numbers
 void user_update(void);
 
-// Display song lodaing/ deletion info on screen
+// Display song loading/ deletion info on screen
 void user_enter_loading(char *name, _U32 total);
 void user_enter_deleting(char *name);
-void user_update_loading(_U32 curr, _U32 total);
-void user_update_deleting(_U08 percent);
+void user_update_loading(_U08 percent);
 void user_exit_loading(void);
 
 #endif /* USER_H_ */

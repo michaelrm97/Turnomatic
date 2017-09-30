@@ -1,19 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Turnomatic_Loader
 {
@@ -70,16 +60,7 @@ namespace Turnomatic_Loader
 
                     fileLoaded = true;
                     // Display filename in textbox
-                    var fileUri = new Uri(fileName);
-                    var cwdUri = new Uri(Directory.GetCurrentDirectory());
-                    String relFileName = cwdUri.MakeRelativeUri(fileUri).ToString();
-                    if (relFileName.Length < fileName.Length)
-                    {
-                        fileNameBox.Text = relFileName;
-                    } else
-                    {
-                        fileNameBox.Text = fileName;
-                    }
+                    fileNameBox.Text = fileName;
                     songLengthBox.Text = song.Length.ToString() + " bars";
                     songSizeBox.Text = song.SizekB.ToString("0.00") + " kB";
                     songName.IsEnabled = true;
@@ -94,24 +75,30 @@ namespace Turnomatic_Loader
 
         private void btn_scanDevice(object sender, RoutedEventArgs e)
         {
-            if (deviceConnected)
+            if (usb.IsOpen)
             {
                 usb.CloseDevice();
             }
             if (usb.OpenDevice())
             {
-                deviceConnected = true;
-                // Populate fields with data
-                foundDevice.Text = "Device connected";
                 if (usb.GetSongList())
                 {
-                    songListBox.ItemsSource = usb.SongNames;
+                    deviceConnected = true;
+                    foundDevice.Text = "Device connected";
+                    songListBox.Items.Clear();
+                    foreach (String name in usb.SongNames)
+                    {
+                        songListBox.Items.Add(name);
+                    }
                     numSongsBox.Text = usb.NumSongs.ToString();
                     maxSongsBox.Text = usb.MaxSongs.ToString();
                     usedSpaceBox.Text = usb.UsedSpace.ToString("0.00");
                     totalSpaceBox.Text = usb.TotalSpace.ToString("0.00");
                     // Activate song list box
                     songListBox.IsEnabled = true;
+                } else
+                {
+                    foundDevice.Text = "Error connecting";
                 }
             } else
             {
@@ -147,7 +134,11 @@ namespace Turnomatic_Loader
                 // Update fields
                 if (usb.GetSongList())
                 {
-                    songListBox.ItemsSource = usb.SongNames;
+                    songListBox.Items.Clear();
+                    foreach (String name in usb.SongNames)
+                    {
+                        songListBox.Items.Add(name);
+                    }
                     numSongsBox.Text = usb.NumSongs.ToString();
                     maxSongsBox.Text = usb.MaxSongs.ToString();
                     usedSpaceBox.Text = usb.UsedSpace.ToString("0.00");
@@ -204,7 +195,11 @@ namespace Turnomatic_Loader
                 // Update fields
                 if (usb.GetSongList())
                 {
-                    songListBox.ItemsSource = usb.SongNames;
+                    songListBox.Items.Clear();
+                    foreach (String name in usb.SongNames)
+                    {
+                        songListBox.Items.Add(name);
+                    }
                     numSongsBox.Text = usb.NumSongs.ToString();
                     maxSongsBox.Text = usb.MaxSongs.ToString();
                     usedSpaceBox.Text = usb.UsedSpace.ToString("0.00");

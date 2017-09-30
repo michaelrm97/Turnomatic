@@ -87,13 +87,13 @@ void UART0_IRQHandler(void) {
 
 			// Receive data about song
 			uart_readBytes(USB_UART, data, 32);
-
-			_U16 num_chords = bytes2int(&data[0]);
-			_U32 addr = song_store(num_chords, (Bar_t *)&data[4], (char *) &data[12]);
 			user_mode_set(MODE_LOADING);
 			user_enter_loading((char *) &data[12], size);
 			int i = 0;
-			user_update_loading(i, size);
+			user_update_loading(0);
+
+			_U16 num_chords = bytes2int(&data[0]);
+			_U32 addr = song_store(num_chords, (Bar_t *)&data[4], (char *) &data[12]);
 
 			while (i < size) {
 				strncpy((char *)data, "ACKK", 4);
@@ -103,7 +103,7 @@ void UART0_IRQHandler(void) {
 					j = size - i;
 				}
 				uart_readBytes(USB_UART, flash_buffer, j);
-				_U32 new_addr = flash_copy(addr, j);
+				_U32 new_addr = flash_copy(addr, 0, j);
 				if (new_addr == addr) {
 					strncpy((char *)data, "FAIL", 4);
 					uart_sendBytes(USB_UART, data, 4);
@@ -111,7 +111,7 @@ void UART0_IRQHandler(void) {
 				}
 				addr = new_addr;
 				i = i + j;
-				user_update_loading(i, size);
+				user_update_loading(i * 100 / size);
 			}
 			strncpy((char *)data, "SUCC", 4);
 			uart_sendBytes(USB_UART, data, 4);
@@ -120,6 +120,7 @@ void UART0_IRQHandler(void) {
 
 		} else if (!strcmp(command, "DELS")) {
 			_U32 n = bytes2int(&data[4]);
+			user_mode_set(MODE_LOADING);
 			user_enter_deleting(song_name_get(n));
 			if (song_delete(n)) {
 				strncpy((char *)data, "SUCC", 4);
@@ -128,7 +129,7 @@ void UART0_IRQHandler(void) {
 				strncpy((char *)data, "FAIL", 4);
 				uart_sendBytes(USB_UART, data, 4);
 			}
-			user_update_deleting(100);
+			user_update_loading(100);
 			user_exit_loading();
 		}
 	}

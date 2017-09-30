@@ -39,6 +39,7 @@ static int num2str(int n, char *s) {
 	if (n == 0) {
 		s[0] = '0';
 		s[1] = '\0';
+		return 1;
 	}
 	int num = n;
 	int digits = 0;
@@ -286,16 +287,12 @@ void user_update(void) {
 
 // Setup song loading info on screen
 void user_enter_loading(char *name, _U32 total) {
-	char str[8];
 	pm_clear_rectangle(0, 0, 127, 63);
 	// Place loading + song name
 	pm_place_string("Loading:", 39, 6);
 	int x = 64 - 3 * strlen(name);
 	pm_place_string(name, x, 16);
-	pm_place_string("/", 61, 41);
-	num2str(total, str);
-	pm_place_string(str, 67, 41);
-	pm_place_string("0", 55, 41);
+	pm_place_string("0%", 58, 41);
 	pm_write_buffer();
 }
 
@@ -310,19 +307,8 @@ void user_enter_deleting(char *name) {
 	pm_write_buffer();
 }
 
-// Update progress of song loading on screen
-void user_update_loading(_U32 curr, _U32 total) {
-	char str[8];
-	int x = 61 - 6 * num2str(curr, str);
-	pm_clear_rectangle(x, 41, 60, 47);
-	pm_place_string(str, x, 41);
-	x = 14 + curr * 100 / total;
-	pm_fill_rectangle(13, 26, x, 37);
-	pm_write_buffer();
-}
-
 // Update progress of song deletion on screen
-void user_update_deleting(_U08 percent) {
+void user_update_loading(_U08 percent) {
 	char str[8];
 	int len = num2str(percent, str);
 	str[len++] = '%';
@@ -379,6 +365,7 @@ void PIN_INT0_IRQHandler(void) {
 		curr_selection = 0;
 		curr_start = 0;
 		display_song_list();
+		pm_write_buffer();
 		break;
 	}
 }
@@ -403,6 +390,7 @@ void PIN_INT1_IRQHandler(void) {
 		curr_selection = 0;
 		curr_start = 0;
 		display_song_list();
+		pm_write_buffer();
 		break;
 	}
 }
@@ -434,6 +422,7 @@ void PIN_INT2_IRQHandler(void) {
 		curr_selection = 0;
 		curr_start = 0;
 		display_song_list();
+		pm_write_buffer();
 		break;
 	}
 }
@@ -469,6 +458,7 @@ void PIN_INT3_IRQHandler(void) {
 		curr_selection = 0;
 		curr_start = 0;
 		display_song_list();
+		pm_write_buffer();
 		break;
 	}
 }
@@ -505,6 +495,7 @@ void PIN_INT4_IRQHandler(void) {
 		curr_selection = 0;
 		curr_start = 0;
 		display_song_list();
+		pm_write_buffer();
 		break;
 	}
 }

@@ -39,7 +39,7 @@
 
 // MIC Settings
 #define MIC_ADC_CHANNEL 8
-#define MIC_THRESHOLD 1e10
+#define MIC_THRESHOLD 1e11
 
 // USB Constants
 #define USB_UART LPC_USART0

@@ -18,7 +18,7 @@ extern volatile _U08 flash_buffer[BUFFER_SIZE] __attribute__((aligned(PAGE_ALIGN
 // Copy from flash_buffer in ram to flash at addr (must be page aligned)
 // Takes in a size to copy which must be either 256, 512, 1024 or 4096 bytes
 // Returns address immediately after written flash
-_U32 flash_copy(_U32 addr, _U32 size);
+_U32 flash_copy(_U32 addr, _U32 offset, _U32 size);
 
 // Copy from flash at addr to flash_buffer in ram (must be page aligned)
 // Takes in a size to read which must be either 256, 512, 1024 or 4096 bytes

@@ -130,7 +130,7 @@ Song song_load(int n) {
 	ret.num_chords = song_table[n].num_chords;
 	int i = 0;
 	for (i = 0; i < 4; i++) {
-		if (!song_table[i].page_break[i]) {
+		if (!song_table[n].page_break[i]) {
 			break;
 		}
 		ret.page_break[i] = song_table[n].page_break[i];
@@ -153,7 +153,10 @@ _U32 song_store(_U16 num_chords, Bar_t *page_break, char *name) {
 	for (int i = 0; i < 4; i++) {
 		table[num_songs].page_break[i] = page_break[i];
 	}
-	flash_copy(SONG_TABLE_BASE, SONG_TABLE_SIZE);
+	// Work out which page to write
+	_U32 offset = (num_songs << 5) & ~(0xFF);
+
+	flash_copy(SONG_TABLE_BASE + offset, offset, 256);
 	num_songs++;
 	used_pages += (num_chords + 31) >> 5;
 	return (start_page << 8);
@@ -174,18 +177,24 @@ bool song_delete(int n) {
 		int complete = 0;
 		while (start_page < end_page) {
 			flash_read(start_page << 5, COPY_SIZE);
-			flash_copy((start_page - del_pages) << 8, COPY_SIZE);
+			flash_copy((start_page - del_pages) << 8, 0, COPY_SIZE);
 			start_page++;
 			complete++;
-			user_update_deleting(complete * 100 / work);
+			user_update_loading(complete * 100 / work);
 		}
 	}
 	flash_read(SONG_TABLE_BASE, SONG_TABLE_SIZE);
 	Song_Entry *table = (Song_Entry *)flash_buffer;
+	_U32 start = (n << 5) & ~(0xFF);
+	_U32 end = ((num_songs - 1) << 5) & ~(0xFF);
 	for (int i = n + 1; i < num_songs; i++) {
 		table[i - 1] = table[i];
 	}
-	flash_copy(SONG_TABLE_BASE, SONG_TABLE_SIZE);
+	memset(&table[num_songs - 1], 0, sizeof(Song_Entry));
+	while (start <= end) {
+		flash_copy(SONG_TABLE_BASE + start, start, 256);
+		start += 256;
+	}
 	num_songs--;
 	used_pages -= del_pages;
 	return TRUE;

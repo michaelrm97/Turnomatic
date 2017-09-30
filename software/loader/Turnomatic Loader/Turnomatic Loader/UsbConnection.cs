@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 
 using FTD2XX_NET;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Turnomatic_Loader
@@ -12,6 +11,10 @@ namespace Turnomatic_Loader
 
     class UsbConnection
     {
+
+        UInt32 TIMEOUT = 100;
+        UInt32 DELETE_TIMEOUT = 1000;
+
         private FTDI device = new FTDI();
 
         private short numSongs = 0;
@@ -50,6 +53,12 @@ namespace Turnomatic_Loader
         public List<String> SongNames {
             get {
                 return songNames;
+            }
+        }
+
+        public bool IsOpen {
+            get {
+                return device.IsOpen;
             }
         }
 
@@ -128,6 +137,7 @@ namespace Turnomatic_Loader
         {
 
             FTDI.FT_STATUS ftStatus;
+            int timeout;
 
             byte[] command = System.Text.Encoding.ASCII.GetBytes("LIST");
             byte[] numCode = BitConverter.GetBytes(0);
@@ -144,8 +154,13 @@ namespace Turnomatic_Loader
             }
 
             UInt32 numBytesAvailable = 0;
+            timeout = 0;
             do
             {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
                 ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
                 if (ftStatus != FTDI.FT_STATUS.FT_OK)
                 {
@@ -172,8 +187,13 @@ namespace Turnomatic_Loader
             {
                 UInt32 songsToRead = (UInt32) Math.Min(16, numSongs - numSongsRead);
                 readData = new byte[songsToRead * 20];
+                timeout = 0;
                 do
                 {
+                    if (timeout++ == TIMEOUT)
+                    {
+                        return false;
+                    }
                     ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
                     if (ftStatus != FTDI.FT_STATUS.FT_OK)
                     {
@@ -200,6 +220,7 @@ namespace Turnomatic_Loader
         public bool AddSong(Song s, short[] pageBreaks, String name)
         {
             FTDI.FT_STATUS ftStatus;
+            int timeout;
 
             byte[] command = System.Text.Encoding.ASCII.GetBytes("ADDS");
             byte[] numCode = BitConverter.GetBytes(s.sizeBytes);
@@ -216,8 +237,13 @@ namespace Turnomatic_Loader
             }
 
             UInt32 numBytesAvailable = 0;
+            timeout = 0;
             do
             {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
                 ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
                 if (ftStatus != FTDI.FT_STATUS.FT_OK)
                 {
@@ -248,8 +274,13 @@ namespace Turnomatic_Loader
             for (int i = 0; i < writeData.Length; i += 256)
             {
                 // Wait for ack
+                timeout = 0;
                 do
                 {
+                    if (timeout++ == TIMEOUT)
+                    {
+                        return false;
+                    }
                     ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
                     if (ftStatus != FTDI.FT_STATUS.FT_OK)
                     {
@@ -275,8 +306,13 @@ namespace Turnomatic_Loader
                 }
             }
 
+            timeout = 0;
             do
             {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
                 ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
                 if (ftStatus != FTDI.FT_STATUS.FT_OK)
                 {
@@ -300,6 +336,7 @@ namespace Turnomatic_Loader
         public bool DeleteSong(int num)
         {
             FTDI.FT_STATUS ftStatus;
+            UInt32 timeout;
 
             byte[] command = System.Text.Encoding.ASCII.GetBytes("DELS");
             byte[] numCode = BitConverter.GetBytes(num);
@@ -317,8 +354,13 @@ namespace Turnomatic_Loader
 
 
             UInt32 numBytesAvailable = 0;
+            timeout = 0;
             do
             {
+                if (timeout++ == DELETE_TIMEOUT)
+                {
+                    return false;
+                }
                 ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
                 if (ftStatus != FTDI.FT_STATUS.FT_OK)
                 {
