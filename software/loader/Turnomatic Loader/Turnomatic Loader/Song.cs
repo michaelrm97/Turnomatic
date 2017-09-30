@@ -16,7 +16,7 @@ namespace Turnomatic_Loader
             internal byte dur;
             internal short bar;
 
-            internal Chord(byte[] notes1, byte dur1, byte bar1)
+            internal Chord(byte[] notes1, byte dur1, short bar1)
             {
                 notes = notes1;
                 dur = dur1;
@@ -50,38 +50,42 @@ namespace Turnomatic_Loader
         {
             // Dummy song (First 4 bars of Clocks)
             chords.Clear();
-            chords.Add(new Chord(new Byte[] { 75 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 67 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 75 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 67 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 75 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 1));
-            chords.Add(new Chord(new Byte[] { 73 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 65 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 73 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 65 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 73 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 2));
-            chords.Add(new Chord(new Byte[] { 73 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 65 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 73 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 65 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 73 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 70 }, 4, 3));
-            chords.Add(new Chord(new Byte[] { 72 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 68 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 65 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 72 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 68 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 65 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 72 }, 4, 4));
-            chords.Add(new Chord(new Byte[] { 68 }, 4, 4));
+
+            for (int i = 0; i < 64; i++)
+            {
+                chords.Add(new Chord(new Byte[] { 75 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 67 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 75 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 67 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 75 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 1)));
+                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 2)));
+                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 3)));
+                chords.Add(new Chord(new Byte[] { 72 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 68 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 72 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 68 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 72 }, 4, (short)(4 * i + 4)));
+                chords.Add(new Chord(new Byte[] { 68 }, 4, (short)(4 * i + 4)));
+            }
 
             //BinaryReader br;
             //try
