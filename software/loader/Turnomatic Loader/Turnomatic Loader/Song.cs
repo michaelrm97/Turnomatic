@@ -24,48 +24,99 @@ namespace Turnomatic_Loader
             }
         }
 
-        private List<Chord> chords;
+        private List<Chord> chords = new List<Chord>();
 
         public int Length {
             get {
-                return 23;
-                //return chords[chords.Count - 1].bar; // Number of bars
+                return chords[chords.Count - 1].bar; // Number of bars
             }
         }
 
-        public double Size {
+        public double SizekB {
             get {
-                return 4;
-                //int numPages = (chords.Count + 31) / 32;
-                //return numPages / 4; // Size in kB rounded up to nearest 256 bytes
+                int numPages = (chords.Count + 31) / 32;
+                return numPages / 4.0; // Size in kB rounded up to nearest 256 bytes
             }
         }
+
+        public int sizeBytes {
+            get {
+                return chords.Count * 8;
+            }
+        } 
 
         // Convert a midi file to a song
         public Song(String fileName)
         {
-            // Dummy song (First bar of twinkle twinkle little star)
-            //chords = new List<Chord>();
-            //chords.Add(new Chord(new Byte[] { 69 }, 4, 1));
-            //chords.Add(new Chord(new Byte[] { 69 }, 4, 1));
-            //chords.Add(new Chord(new Byte[] { 76 }, 4, 1));
-            //chords.Add(new Chord(new Byte[] { 76 }, 4, 1));
+            // Dummy song (First 4 bars of Clocks)
+            chords.Clear();
+            chords.Add(new Chord(new Byte[] { 75 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 67 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 75 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 67 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 75 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 1));
+            chords.Add(new Chord(new Byte[] { 73 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 65 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 73 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 65 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 73 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 2));
+            chords.Add(new Chord(new Byte[] { 73 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 65 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 73 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 65 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 73 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 70 }, 4, 3));
+            chords.Add(new Chord(new Byte[] { 72 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 68 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 65 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 72 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 68 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 65 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 72 }, 4, 4));
+            chords.Add(new Chord(new Byte[] { 68 }, 4, 4));
 
-            BinaryReader br;
-            try
-            {
-                br = new BinaryReader(new FileStream(fileName, FileMode.Open));
-            } catch (IOException e)
-            {
-                throw e;
-            }
+            //BinaryReader br;
+            //try
+            //{
+            //    br = new BinaryReader(new FileStream(fileName, FileMode.Open));
+            //} catch (IOException e)
+            //{
+            //    throw e;
+            //}
 
             //throw new IOException("Not sure how to read midi files yet");
 
-            br.Close();
+            //br.Close();
         }
 
-        public byte[] ToBytes()
+        public byte[] GetInfo(short[] pageBreaks, String name)
+        {
+            byte[] data = new byte[32];
+            byte[] numChords = BitConverter.GetBytes(chords.Count);
+            byte[] pageBreakBytes = new byte[8];
+            for (int i = 0; i < pageBreaks.Length; i++)
+            {
+                pageBreakBytes[2 * i] = (byte)(pageBreaks[i] & 0xFF);
+                pageBreakBytes[2 * i + 1] = (byte)(pageBreaks[i] >> 8);
+            }
+            byte[] nameBytes = System.Text.Encoding.ASCII.GetBytes(name);
+
+            numChords.CopyTo(data, 0);
+            pageBreakBytes.CopyTo(data, 4);
+            nameBytes.CopyTo(data, 12);
+
+            return data;
+        }
+
+        public byte[] GetData()
         {
             byte[] data = new byte[8 * chords.Count];
 

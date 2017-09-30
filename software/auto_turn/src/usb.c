@@ -46,7 +46,7 @@ void usb_init(void) {
 void UART0_IRQHandler(void) {
 	// Check that we actually have data to receive
 	if (Chip_UART_GetStatus(USB_UART) & UART_STAT_RXRDY) {
-		_U08 data[24];
+		_U08 data[32];
 		uart_readBytes(USB_UART, data, 8);
 		// Process data
 		char command[5];
@@ -86,28 +86,31 @@ void UART0_IRQHandler(void) {
 			}
 
 			// Receive data about song
-			uart_readBytes(USB_UART, data, 24);
+			uart_readBytes(USB_UART, data, 32);
 
-			_U16 num_chords = size >> 3;
-			_U32 addr = song_store(num_chords, (Bar_t *)data, (char *) &data[4]);
+			_U16 num_chords = bytes2int(&data[0]);
+			_U32 addr = song_store(num_chords, (Bar_t *)&data[4], (char *) &data[12]);
 			user_mode_set(MODE_LOADING);
-			user_enter_loading((char *) &data[8], size);
+			user_enter_loading((char *) &data[12], size);
 			int i = 0;
 			user_update_loading(i, size);
+
 			while (i < size) {
+				strncpy((char *)data, "ACKK", 4);
+				uart_sendBytes(USB_UART, data, 4);
 				int j = COPY_SIZE;
 				if (size - i < COPY_SIZE) {
 					j = size - i;
 				}
 				uart_readBytes(USB_UART, flash_buffer, j);
 				_U32 new_addr = flash_copy(addr, j);
-				if (new_addr != addr) {
-					addr = new_addr;
-				} else {
+				if (new_addr == addr) {
 					strncpy((char *)data, "FAIL", 4);
 					uart_sendBytes(USB_UART, data, 4);
 					return;
 				}
+				addr = new_addr;
+				i = i + j;
 				user_update_loading(i, size);
 			}
 			strncpy((char *)data, "SUCC", 4);

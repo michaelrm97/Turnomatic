@@ -188,6 +188,5 @@ bool song_delete(int n) {
 	flash_copy(SONG_TABLE_BASE, SONG_TABLE_SIZE);
 	num_songs--;
 	used_pages -= del_pages;
-	num_songs--;
 	return TRUE;
 }

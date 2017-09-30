@@ -4,6 +4,8 @@ using System.Text;
 using System.Threading;
 
 using FTD2XX_NET;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Turnomatic_Loader
 {
@@ -124,16 +126,216 @@ namespace Turnomatic_Loader
 
         public bool GetSongList()
         {
+
+            FTDI.FT_STATUS ftStatus;
+
+            byte[] command = System.Text.Encoding.ASCII.GetBytes("LIST");
+            byte[] numCode = BitConverter.GetBytes(0);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            UInt32 numBytesAvailable = 0;
+            do
+            {
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 8);
+
+            byte[] readData = new byte[8];
+            UInt32 numBytesRead = 0;
+            // Read first 8 bytes to determine how many song names to expect
+            ftStatus = device.Read(readData, 8, ref numBytesRead);
+
+            numSongs = (short) (readData[0] + (readData[1] << 8));
+            usedPages = (short)(readData[2] + (readData[3] << 8));
+            maxSongs = (short)(readData[4] + (readData[5] << 8));
+            totalPages = (short)(readData[6] + (readData[7] << 8));
+
+            songNames.Clear();
+
+            // Read 16 songs at a time
+            UInt32 numSongsRead = 0;
+            while (numSongsRead < numSongs)
+            {
+                UInt32 songsToRead = (UInt32) Math.Min(16, numSongs - numSongsRead);
+                readData = new byte[songsToRead * 20];
+                do
+                {
+                    ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                    if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                    {
+                        return false;
+                    }
+                    Thread.Sleep(10);
+                } while (numBytesAvailable < 20 * songsToRead);
+
+                ftStatus = device.Read(readData, 20 * songsToRead, ref numBytesRead);
+
+                for (UInt32 i = 0; i < songsToRead; i++)
+                {
+                    byte[] nameBytes = new byte[20];
+                    Array.Copy(readData, i * 20, nameBytes, 0, 20);
+                    songNames.Add(Encoding.ASCII.GetString(nameBytes).TrimEnd('\0'));
+                }
+
+                numSongsRead += songsToRead;
+            }
+
             return true;
         }
 
-        public bool AddSong(Song s, byte[] page_breaks, String name)
+        public bool AddSong(Song s, short[] pageBreaks, String name)
         {
+            FTDI.FT_STATUS ftStatus;
+
+            byte[] command = System.Text.Encoding.ASCII.GetBytes("ADDS");
+            byte[] numCode = BitConverter.GetBytes(s.sizeBytes);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            UInt32 numBytesAvailable = 0;
+            do
+            {
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            byte[] readData = new byte[4];
+            UInt32 numBytesRead = 0;
+            // Read first 4 bytes to determine if request is successful
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            String succ = Encoding.ASCII.GetString(readData);
+            if (succ != "SUCC")
+            {
+                return false;
+            }
+
+            // Write song metadata
+            writeData = s.GetInfo(pageBreaks, name);
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            writeData = s.GetData();
+            for (int i = 0; i < writeData.Length; i += 256)
+            {
+                // Wait for ack
+                do
+                {
+                    ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                    if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                    {
+                        return false;
+                    }
+                    Thread.Sleep(10);
+                } while (numBytesAvailable < 4);
+                ftStatus = device.Read(readData, 4, ref numBytesRead);
+                String ackk = Encoding.ASCII.GetString(readData);
+                if (ackk != "ACKK")
+                {
+                    return false;
+                }
+
+                int num = Math.Min(256, writeData.Length - i);
+
+                byte[] toWrite = writeData.Skip(i).Take(num).ToArray();
+
+                ftStatus = device.Write(toWrite, num, ref numBytesWritten);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+            }
+
+            do
+            {
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            readData = new byte[4];
+            // Read first 4 bytes to determine if request is successful
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            succ = Encoding.ASCII.GetString(readData);
+            if (succ != "SUCC")
+            {
+                return false;
+            }
+
             return true;
         }
 
         public bool DeleteSong(int num)
         {
+            FTDI.FT_STATUS ftStatus;
+
+            byte[] command = System.Text.Encoding.ASCII.GetBytes("DELS");
+            byte[] numCode = BitConverter.GetBytes(num);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+
+            UInt32 numBytesAvailable = 0;
+            do
+            {
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            byte[] readData = new byte[4];
+            UInt32 numBytesRead = 0;
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            String succ = Encoding.ASCII.GetString(readData);
+            if (succ != "SUCC")
+            {
+                return false;
+            }
+
             return true;
         }
 

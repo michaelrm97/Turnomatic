@@ -81,7 +81,7 @@ namespace Turnomatic_Loader
                         fileNameBox.Text = fileName;
                     }
                     songLengthBox.Text = song.Length.ToString() + " bars";
-                    songSizeBox.Text = song.Size.ToString("0.00") + " kB";
+                    songSizeBox.Text = song.SizekB.ToString("0.00") + " kB";
                     songName.IsEnabled = true;
                     numPagesBox.IsEnabled = true;
                     for (int i = 0; i < 4; i++)
@@ -109,7 +109,7 @@ namespace Turnomatic_Loader
                     numSongsBox.Text = usb.NumSongs.ToString();
                     maxSongsBox.Text = usb.MaxSongs.ToString();
                     usedSpaceBox.Text = usb.UsedSpace.ToString("0.00");
-                    totalSpaceBox.Text = usb.UsedSpace.ToString("0.00");
+                    totalSpaceBox.Text = usb.TotalSpace.ToString("0.00");
                     // Activate song list box
                     songListBox.IsEnabled = true;
                 }
@@ -151,7 +151,7 @@ namespace Turnomatic_Loader
                     numSongsBox.Text = usb.NumSongs.ToString();
                     maxSongsBox.Text = usb.MaxSongs.ToString();
                     usedSpaceBox.Text = usb.UsedSpace.ToString("0.00");
-                    totalSpaceBox.Text = usb.UsedSpace.ToString("0.00");
+                    totalSpaceBox.Text = usb.TotalSpace.ToString("0.00");
                 }
             }
             else
@@ -193,10 +193,10 @@ namespace Turnomatic_Loader
 
         private void LoadSongCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            byte[] breaks = new byte[numPagesBox.SelectedIndex];
+            short[] breaks = new short[numPagesBox.SelectedIndex];
             for (int i = 0; i < numPagesBox.SelectedIndex; i++)
             {
-                breaks[i] = Byte.Parse(pageBreaks[i].Text);
+                breaks[i] = short.Parse(pageBreaks[i].Text);
             }
 
             if (usb.AddSong(song, breaks, songName.Text))
@@ -208,7 +208,7 @@ namespace Turnomatic_Loader
                     numSongsBox.Text = usb.NumSongs.ToString();
                     maxSongsBox.Text = usb.MaxSongs.ToString();
                     usedSpaceBox.Text = usb.UsedSpace.ToString("0.00");
-                    totalSpaceBox.Text = usb.UsedSpace.ToString("0.00");
+                    totalSpaceBox.Text = usb.TotalSpace.ToString("0.00");
                 }
             }
             else

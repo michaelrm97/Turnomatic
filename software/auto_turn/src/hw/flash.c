@@ -26,13 +26,13 @@ _U32 flash_copy(_U32 addr, _U32 size) {
 	if (Chip_IAP_PreSectorForReadWrite(sector, sector) != IAP_CMD_SUCCESS) {
 		return addr;
 	}
-	if (size < 256) {
+	if (size <= 256) {
 		size = 256;
-	} else if (size > 256 && size < 512) {
+	} else if (size > 256 && size <= 512) {
 		size = 512;
-	} else if (size > 512 && size < 1024) {
+	} else if (size > 512 && size <= 1024) {
 		size = 1024;
-	} else if (size > 1024 && size < 4096){
+	} else if (size > 1024 && size <= 4096){
 		size = 4096;
 	} else {
 		// Invalid size
@@ -48,5 +48,5 @@ _U32 flash_copy(_U32 addr, _U32 size) {
 // Copy from flash at addr to flash_buffer in ram (must be page aligned)
 // Takes in a size to read which must be either 256, 512, 1024 or 4096 bytes
 void flash_read(_U32 addr, _U32 size) {
-	memcpy((void *)addr, (void *)flash_buffer, size);
+	memcpy((void *)flash_buffer, (void *)addr, size);
 }
