@@ -11,6 +11,8 @@
 #include <flash.h>
 
 #include <user.h>
+#include <usb.h>
+
 #include <string.h>
 
 static _U16 num_songs;
@@ -169,24 +171,26 @@ bool song_delete(int n) {
 		return FALSE;
 	}
 	_U32 del_pages = (SONG_TABLE[n].num_chords + 31) >> 5;
+	_U32 start = (n << 5) & ~(0xFF);
+	_U32 end = ((num_songs - 1) << 5) & ~(0xFF);
+	int work = ((end - start) >> 5) + 1; // number of pages to write in total
+	int complete = 0;
 	if (n < num_songs - 1) {
 		// Move all the data down
 		_U32 start_page = song_table[n + 1].flash_page;
 		_U32 end_page = used_pages + SONG_DATA_PAGE;
-		int work = end_page - start_page + 1;
-		int complete = 0;
+		work += end_page - start_page;
 		while (start_page < end_page) {
 			flash_read(start_page << 5, COPY_SIZE);
 			flash_copy((start_page - del_pages) << 8, 0, COPY_SIZE);
 			start_page++;
 			complete++;
 			user_update_loading(complete * 100 / work);
+			usb_ack();
 		}
 	}
 	flash_read(SONG_TABLE_BASE, SONG_TABLE_SIZE);
 	Song_Entry *table = (Song_Entry *)flash_buffer;
-	_U32 start = (n << 5) & ~(0xFF);
-	_U32 end = ((num_songs - 1) << 5) & ~(0xFF);
 	for (int i = n + 1; i < num_songs; i++) {
 		table[i - 1] = table[i];
 	}
@@ -194,6 +198,9 @@ bool song_delete(int n) {
 	while (start <= end) {
 		flash_copy(SONG_TABLE_BASE + start, start, 256);
 		start += 256;
+		complete++;
+		user_update_loading(complete * 100 / work);
+		usb_ack();
 	}
 	num_songs--;
 	used_pages -= del_pages;

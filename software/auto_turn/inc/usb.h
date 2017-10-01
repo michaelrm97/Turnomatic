@@ -13,5 +13,6 @@
 
 // Setup uart to interact with ftdi chip
 void usb_init(void);
+void usb_ack(void);
 
 #endif /* USB_H_ */

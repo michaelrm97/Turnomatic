@@ -56,6 +56,20 @@ namespace Turnomatic_Loader
                             pageBreaks[i].IsEnabled = false;
                         }
                         return;
+                    } catch (FileFormatException)
+                    {
+                        MessageBox.Show("Error reading MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        fileLoaded = false;
+                        fileNameBox.Text = "Select MIDI file";
+                        songLengthBox.Text = "-";
+                        songSizeBox.Text = "-";
+                        songName.IsEnabled = false;
+                        numPagesBox.IsEnabled = false;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            pageBreaks[i].IsEnabled = false;
+                        }
+                        return;
                     }
 
                     fileLoaded = true;

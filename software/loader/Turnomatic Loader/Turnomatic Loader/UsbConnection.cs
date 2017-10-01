@@ -12,8 +12,7 @@ namespace Turnomatic_Loader
     class UsbConnection
     {
 
-        UInt32 TIMEOUT = 100;
-        UInt32 DELETE_TIMEOUT = 1000;
+        private const UInt32 TIMEOUT = 100;
 
         private FTDI device = new FTDI();
 
@@ -352,33 +351,41 @@ namespace Turnomatic_Loader
                 return false;
             }
 
-
-            UInt32 numBytesAvailable = 0;
-            timeout = 0;
-            do
+            while (true)
             {
-                if (timeout++ == DELETE_TIMEOUT)
+                UInt32 numBytesAvailable = 0;
+                timeout = 0;
+                do
+                {
+                    if (timeout++ == TIMEOUT)
+                    {
+                        return false;
+                    }
+                    ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                    if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                    {
+                        return false;
+                    }
+                    Thread.Sleep(10);
+                } while (numBytesAvailable < 4);
+
+                byte[] readData = new byte[4];
+                UInt32 numBytesRead = 0;
+                ftStatus = device.Read(readData, 4, ref numBytesRead);
+                String succ = Encoding.ASCII.GetString(readData);
+                if (succ == "ACKK")
+                {
+                    continue;
+                } else if (succ == "SUCC")
+                {
+                    return true;
+                } else
                 {
                     return false;
                 }
-                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
-                if (ftStatus != FTDI.FT_STATUS.FT_OK)
-                {
-                    return false;
-                }
-                Thread.Sleep(10);
-            } while (numBytesAvailable < 4);
 
-            byte[] readData = new byte[4];
-            UInt32 numBytesRead = 0;
-            ftStatus = device.Read(readData, 4, ref numBytesRead);
-            String succ = Encoding.ASCII.GetString(readData);
-            if (succ != "SUCC")
-            {
-                return false;
             }
 
-            return true;
         }
 
     }

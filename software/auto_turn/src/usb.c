@@ -41,6 +41,12 @@ void usb_init(void) {
 
 }
 
+void usb_ack(void) {
+	// Send a single ack to pc
+	_U08 data[5] = "ACKK";
+	uart_sendBytes(USB_UART, data, 4);
+}
+
 // Callback function for receiving message via uart from ftdi
 // Determines type of message then sends appropriate response
 void UART0_IRQHandler(void) {
@@ -129,7 +135,6 @@ void UART0_IRQHandler(void) {
 				strncpy((char *)data, "FAIL", 4);
 				uart_sendBytes(USB_UART, data, 4);
 			}
-			user_update_loading(100);
 			user_exit_loading();
 		}
 	}
