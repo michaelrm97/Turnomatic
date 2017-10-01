@@ -198,6 +198,18 @@ namespace Turnomatic_Loader
 
         private void LoadSongCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            // Check we have enough space first
+            if (usb.NumSongs >= usb.MaxSongs)
+            {
+                MessageBox.Show("Maximum number of songs reached", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (usb.UsedSpace + song.SizekB > usb.TotalSpace)
+            {
+                MessageBox.Show("Insufficient space available", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             short[] breaks = new short[numPagesBox.SelectedIndex];
             for (int i = 0; i < numPagesBox.SelectedIndex; i++)
             {

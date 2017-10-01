@@ -43,8 +43,7 @@ void usb_init(void) {
 
 void usb_ack(void) {
 	// Send a single ack to pc
-	_U08 data[5] = "ACKK";
-	uart_sendBytes(USB_UART, data, 4);
+	uart_sendBytes(USB_UART, (_U08 *) "ACKK", 4);
 }
 
 // Callback function for receiving message via uart from ftdi
@@ -80,7 +79,7 @@ void UART0_IRQHandler(void) {
 		} else if (!strcmp(command, "ADDS")) {
 			_U32 size = bytes2int(&data[4]);
 			_U32 available = (TOTAL_PAGES - song_used_pages()) << 8;
-			if (size <= available) {
+			if (size <= available && song_num() < MAX_SONGS) {
 				// Return SUCC
 				strncpy((char *)data, "SUCC", 4);
 				uart_sendBytes(USB_UART, data, 4);

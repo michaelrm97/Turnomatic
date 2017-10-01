@@ -29,54 +29,7 @@ typedef struct {
 } Song_Entry;
 
 // Initial song table
-__RODATA(Flash2) const Song_Entry song_table[MAX_SONGS] = {
-		{"Twinkle Star", 256, 42, {9, 0 , 0, 0}}
-};
-
-__RODATA(Flash3) const Chord song_data[MAX_CHORDS] = {
-		{{A4}, 1, 4, 1},
-		{{A4}, 1, 4, 1},
-		{{E5}, 1, 4, 1},
-		{{E5}, 1, 4, 1},
-		{{FS5}, 1, 4, 2},
-		{{FS5}, 1, 4, 2},
-		{{E5}, 1, 8, 2},
-		{{D5}, 1, 4, 3},
-		{{D5}, 1, 4, 3},
-		{{CS5}, 1, 4, 3},
-		{{CS5}, 1, 4, 3},
-		{{B4}, 1, 4, 4},
-		{{B4}, 1, 4, 4},
-		{{A4}, 1, 8, 4},
-		{{E5}, 1, 4, 5},
-		{{E5}, 1, 4, 5},
-		{{D5}, 1, 4, 5},
-		{{D5}, 1, 4, 5},
-		{{CS5}, 1, 4, 6},
-		{{CS5}, 1, 4, 6},
-		{{B4}, 1, 8, 6},
-		{{E5}, 1, 4, 7},
-		{{E5}, 1, 4, 7},
-		{{D5}, 1, 4, 7},
-		{{D5}, 1, 4, 7},
-		{{CS5}, 1, 4, 8},
-		{{CS5}, 1, 4, 8},
-		{{B4}, 1, 8, 8},
-		{{A4}, 1, 4, 9},
-		{{A4}, 1, 4, 9},
-		{{E5}, 1, 4, 9},
-		{{E5}, 1, 4, 9},
-		{{FS5}, 1, 4, 10},
-		{{FS5}, 1, 4, 10},
-		{{E5}, 1, 8, 10},
-		{{D5}, 1, 4, 11},
-		{{D5}, 1, 4, 11},
-		{{CS5}, 1, 4, 11},
-		{{CS5}, 1, 4,11},
-		{{B4}, 1, 4, 12},
-		{{B4}, 1, 4, 12},
-		{{A4}, 1, 8, 12}
-};
+__RODATA(Flash2) const Song_Entry song_table[MAX_SONGS] = {0};
 
 // Initialise song table
 // Work out number of songs and used pages
@@ -88,12 +41,12 @@ void song_table_init(void) {
 		}
 	}
 	num_songs = i;
-	for (i = 0; i < MAX_CHORDS; i+= CHORDS_IN_PAGE) {
-		if (song_data[i].dur == 0) {
-			break;
-		}
+	if (num_songs > 0) {
+		used_pages = song_table[num_songs - 1].flash_page - SONG_DATA_PAGE +
+				((song_table[num_songs - 1].num_chords + 31) >> 5) - 1;
+	} else {
+		used_pages = 0;
 	}
-	used_pages = i >> 5;
 }
 
 // Get name of song at index n of song table

@@ -22,6 +22,19 @@ _U32 flash_copy(_U32 addr, _U32 offset, _U32 size) {
 		return addr; // Prevent accidental writing of code section
 	}
 
+	if (size <= 256) {
+		size = 256;
+	} else if (size > 256 && size <= 512) {
+		size = 512;
+	} else if (size > 512 && size <= 1024) {
+		size = 1024;
+	} else if (size > 1024 && size <= 4096){
+		size = 4096;
+	} else {
+		// Invalid size
+		return addr;
+	}
+
 	_U08 sector = addr >> 15; // divide by 32k
 	if (Chip_IAP_PreSectorForReadWrite(sector, sector) != IAP_CMD_SUCCESS) {
 		return addr;
@@ -36,18 +49,6 @@ _U32 flash_copy(_U32 addr, _U32 offset, _U32 size) {
 		return addr;
 	}
 
-	if (size <= 256) {
-		size = 256;
-	} else if (size > 256 && size <= 512) {
-		size = 512;
-	} else if (size > 512 && size <= 1024) {
-		size = 1024;
-	} else if (size > 1024 && size <= 4096){
-		size = 4096;
-	} else {
-		// Invalid size
-		return addr;
-	}
 	if (Chip_IAP_CopyRamToFlash(addr, (_U32 *) (flash_buffer + offset), size) == IAP_CMD_SUCCESS) {
 		return addr + size;
 	} else {

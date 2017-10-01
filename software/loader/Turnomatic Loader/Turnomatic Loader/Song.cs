@@ -27,16 +27,16 @@ namespace Turnomatic_Loader
 
         internal class KeySignature
         {
-            private byte sharps;
+            private sbyte sharps;
             private bool major;
 
-            internal KeySignature(byte _sharps, bool _major)
+            internal KeySignature(sbyte _sharps, bool _major)
             {
                 sharps = _sharps;
                 major = _major;
             }
 
-            internal byte Sharps {
+            internal sbyte Sharps {
                 get {
                     return sharps;
                 }
@@ -69,7 +69,12 @@ namespace Turnomatic_Loader
 
         public int Length {
             get {
-                return chords[chords.Count - 1].bar; // Number of bars
+                if (chords.Count > 0) {
+                    return chords[chords.Count - 1].bar; // Number of bars
+                } else
+                {
+                    return 0;
+                }
             }
         }
 
@@ -90,43 +95,6 @@ namespace Turnomatic_Loader
         public Song(String fileName)
         {
             chords.Clear();
-
-            //Dummy song(First 4 bars of Clocks)
-            for (int i = 0; i < 64; i++)
-            {
-                chords.Add(new Chord(new Byte[] { 75 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 67 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 75 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 67 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 75 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 1)));
-                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 2)));
-                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 73 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 70 }, 4, (short)(4 * i + 3)));
-                chords.Add(new Chord(new Byte[] { 72 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 68 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 72 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 68 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 65 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 72 }, 4, (short)(4 * i + 4)));
-                chords.Add(new Chord(new Byte[] { 68 }, 4, (short)(4 * i + 4)));
-            }
 
             BinaryReader br;
             try
@@ -178,11 +146,50 @@ namespace Turnomatic_Loader
             int tempo = 0; // microseconds per quarter note
             int timeSig = 0; // quarter notes per bar
             KeySignature keySig = new KeySignature(0, true); // Initally C Major
-            
+
+            byte[] noteValues = new byte[128];
+            byte[] oldValues = new byte[128];
+
+            int reftime = 0; // Time when current time signature first started
+            int ctime = 0; // Current time of track
+            int ltime = 0; // Time of last change
+
+            int refbar = 1;
+            int cbar = 1;
+
+            bool notesChanged = false;
+
             while (offset < chunkLength && !endOfTrack)
             {
                 int delta = GetVarLength(chunk, ref offset);
-                Debug.WriteLine(String.Format("Time delta: {0}", delta));
+                if (delta > 0 && notesChanged)
+                {
+                    
+                    // Create a chord out of currently played notes
+                    int dtime = ctime - ltime;
+                    byte dur = (byte)Math.Round(4 * (double)dtime / division);
+                    Debug.WriteLine("ctime: {0} ltime: {1}", ctime, ltime);
+                    if (dur > 0)
+                    {
+                        short bar = (short)(((ltime - reftime) / (division * timeSig)) + refbar);
+                        byte[] notes = oldValues.Select((s, i) => new { i, s }).Where(t => t.s > 0).Select(t => (byte) t.i).ToArray();
+                        Debug.WriteLine(String.Format("Dur: {0} Bar: {1} Notes: {2}", dur, bar, BitConverter.ToString(notes)));
+                        chords.Add(new Chord(notes, dur, bar));
+                    }
+
+                    Array.Copy(noteValues, oldValues, 128);
+
+                    notesChanged = false;
+                    ltime = ctime;
+                }
+                ctime += delta;
+                if (division != 0 && timeSig != 0)
+                {
+                    cbar = (int)((ctime - reftime) / (division * timeSig)) + refbar;
+                    Debug.WriteLine(String.Format("Current time: {0} Current bar: {1}", ctime, cbar));
+                }
+
+                // Debug.WriteLine(String.Format("Time delta: {0}", delta));
                 byte message = chunk[offset++];
                 if (message == 0xFF)
                 {
@@ -196,6 +203,7 @@ namespace Turnomatic_Loader
                             // Sequence number
                             short seqNum = BitConverter.ToInt16(vData.Reverse().ToArray(), 0);
                             Debug.WriteLine(String.Format("Sequence number: {0}", seqNum));
+                            ltime = ctime;
                             break;
                         case 0x01:
                             // Text event
@@ -259,9 +267,11 @@ namespace Turnomatic_Loader
                             Debug.WriteLine(String.Format("MIDI clocks per metronome tick: {0}", cc));
                             Debug.WriteLine(String.Format("32nd notes per MIDI quarter note: {0}", bb));
                             timeSig = (int) (nn * Math.Pow(2, 2 - dd));
+                            reftime = ctime;
+                            refbar = cbar;
                             break;
                         case 0x59:
-                            byte sf = vData[0];
+                            sbyte sf = (sbyte)vData[0];
                             bool major = (vData[1] == 0);
                             // Key signature
                             keySig = new KeySignature(sf, major);
@@ -297,6 +307,8 @@ namespace Turnomatic_Loader
                             key = (byte)(chunk[offset++] & 0x7F);
                             val = (byte)(chunk[offset++] & 0x7F);
                             Debug.WriteLine("Note off: Key: {0} Vol: {1}", key, val);
+                            noteValues[key] = 0;
+                            notesChanged = true;
                             break;
                         case 0x90:
                             // Note on event
@@ -304,6 +316,8 @@ namespace Turnomatic_Loader
                             key = (byte)(chunk[offset++] & 0x7F);
                             val = (byte)(chunk[offset++] & 0x7F);
                             Debug.WriteLine("Note on: Key: {0} Vl: {1}", key, val);
+                            noteValues[key] = val;
+                            notesChanged = true;
                             break;
                         case 0xA0:
                             // Polyphonic key pressure
@@ -339,6 +353,8 @@ namespace Turnomatic_Loader
                                 key = (byte)(message & 0x7F);
                                 val = (byte)(chunk[offset++] & 0x7F);
                                 Debug.WriteLine("Update note value: Key: {0} Vel: {1}", key, val);
+                                noteValues[key] = val;
+                                notesChanged = true;
                             } else
                             {
                                 // Unknown message type
