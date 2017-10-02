@@ -31,6 +31,9 @@ static _U32 curr_chord;
 // Determine whether a note is located in a chord
 // Takes in target note, array of notes and number of notes in chord
 static bool note_in_chord(Note_t note, Note_t *notes, uint8_t n) {
+	if (n == 0) {
+		return TRUE;
+	}
 	for (int i = 0; i < n; i++) {
 		if ((note % NOTES_IN_OCTAVE) == (notes[i] % NOTES_IN_OCTAVE)) return TRUE;
 	}

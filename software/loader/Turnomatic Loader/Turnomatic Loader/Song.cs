@@ -174,7 +174,10 @@ namespace Turnomatic_Loader
                         short bar = (short)(((ltime - reftime) / (division * timeSig)) + refbar);
                         byte[] notes = oldValues.Select((s, i) => new { i, s }).Where(t => t.s > 0).Select(t => (byte) t.i).ToArray();
                         Debug.WriteLine(String.Format("Dur: {0} Bar: {1} Notes: {2}", dur, bar, BitConverter.ToString(notes)));
-                        chords.Add(new Chord(notes, dur, bar));
+                        if (notes.Length > 0)
+                        {
+                            chords.Add(new Chord(notes, dur, bar));
+                        }
                     }
 
                     Array.Copy(noteValues, oldValues, 128);
@@ -320,28 +323,33 @@ namespace Turnomatic_Loader
                             notesChanged = true;
                             break;
                         case 0xA0:
+                            noteOn = false;
                             // Polyphonic key pressure
                             key = (byte)(chunk[offset++] & 0x7F);
                             val = (byte)(chunk[offset++] & 0x7F);
                             Debug.WriteLine("Polyphonic key pressure: Key: {0} Pressure value: {1}", key, val);
                             break;
                         case 0xB0:
+                            noteOn = false;
                             // Control change
                             byte controller = (byte)(chunk[offset++] & 0x7F);
                             val = (byte)(chunk[offset++] & 0x7F);
                             Debug.WriteLine("Control change: Controller number: {0} Vel: {1}", controller, val);
                             break;
                         case 0xC0:
+                            noteOn = false;
                             // Program change
                             byte program = (byte)(chunk[offset++] & 0x7F);
                             Debug.WriteLine("Program change: {0}", program);
                             break;
                         case 0xD0:
+                            noteOn = false;
                             // Channel pressure
                             val = (byte)(chunk[offset++] & 0x7F);
                             Debug.WriteLine("Channel pressure: {0}", val);
                             break;
                         case 0xE0:
+                            noteOn = false;
                             // Pitch Wheel Change
                             short wheel = (short)((chunk[offset++] & 0x7F) | ((chunk[offset++] & 0x7F) << 7));
                             Debug.WriteLine("Pitch wheel change: {0}", wheel);
