@@ -43,7 +43,7 @@ void song_table_init(void) {
 	num_songs = i;
 	if (num_songs > 0) {
 		used_pages = song_table[num_songs - 1].flash_page - SONG_DATA_PAGE +
-				((song_table[num_songs - 1].num_chords + 31) >> 5) - 1;
+				((song_table[num_songs - 1].num_chords + 31) >> 5);
 	} else {
 		used_pages = 0;
 	}

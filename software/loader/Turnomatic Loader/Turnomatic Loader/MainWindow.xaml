@@ -9,6 +9,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="local:CustomCommands.DelSong" Executed="DelSongCommand_Executed" CanExecute="DelSongCommand_CanExecute" />
         <CommandBinding Command="local:CustomCommands.LoadSong" Executed="LoadSongCommand_Executed" CanExecute="LoadSongCommand_CanExecute" />
+        <CommandBinding Command="local:CustomCommands.ConfigDevice" Executed="ConfigDeviceCommand_Executed" CanExecute="ConfigDeviceCommand_CanExecute" />
     </Window.CommandBindings>
     <Grid>
         <Grid.Resources>

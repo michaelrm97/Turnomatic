@@ -1,0 +1,78 @@
+﻿<Window x:Class="Turnomatic_Loader.ConfigDialogBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Turnomatic_Loader"
+        mc:Ignorable="d"
+        MinHeight="300" MaxHeight="300"
+        MinWidth="500" MaxWidth="500"
+        Title="Configuration" Height="300" Width="500">
+    <Grid>
+        <Grid.Resources>
+            <Style x:Key="lineStyle" TargetType="Line">
+                <Setter Property="Stroke" Value="Gray" />
+                <Setter Property="Stretch" Value="Fill" />
+                <Setter Property="Grid.ZIndex" Value="100" />
+                <Setter Property="StrokeDashArray" Value="1,2" />
+            </Style>
+
+            <Style x:Key="verticalLineStyle" TargetType="Line" BasedOn="{StaticResource lineStyle}">
+                <Setter Property="Y2" Value="1" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="Grid.RowSpan"   
+                    Value="{Binding   
+                                Path=RowDefinitions.Count,  
+                                RelativeSource={RelativeSource AncestorType=Grid}}"/>
+            </Style>
+        </Grid.Resources>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Line Grid.Column="0" Style="{StaticResource verticalLineStyle}"/>
+
+        <StackPanel Margin="10px" Orientation="Vertical" Grid.Column="0">
+            <TextBlock FontSize="20px" Margin="4px" Padding="0,0,0,10">Motor control</TextBlock>
+            <WrapPanel>
+                <Button Name="readPot" Width="80px" Padding="4px" Margin="4px" Click="btn_readPot">Read Pot</Button>
+            </WrapPanel>
+            <ScrollViewer Name="potValues" Margin="4px" VerticalScrollBarVisibility="Auto" Height="120px">
+                <ListBox Name="potValuesBox"/>
+            </ScrollViewer>
+            <DockPanel Margin="4px" LastChildFill="False">
+                <TextBox Name="posBox" DockPanel.Dock="Left" Width="100"/>
+                <Button DockPanel.Dock="Right" Width="80px" Click="btn_setPot">Set Pos</Button>
+            </DockPanel>
+        </StackPanel>
+
+        <StackPanel Margin="10px" Orientation="Vertical" Grid.Column="1">
+            <TextBlock FontSize="20px" Margin="4px" Padding="0,0,0,10">Configure constants</TextBlock>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label DockPanel.Dock="Left" Content="Page 1 position" Target="{Binding ElementName=page1pos}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" Width="60px" Name="page1pos" TextChanged="TextChange"/>
+            </DockPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label DockPanel.Dock="Left" Content="Page position difference" Target="{Binding ElementName=pagePossDiff}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" Width="60px" Name="pagePosDiff" TextChanged="TextChange"/>
+            </DockPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label DockPanel.Dock="Left" Content="Motor gain" Target="{Binding ElementName=motorGain}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" Width="60px" Name="motorGain" TextChanged="TextChange"/>
+            </DockPanel>
+            <DockPanel Margin="0,2,4,2" LastChildFill="False">
+                <Label DockPanel.Dock="Left" Content="Mic Threshold" Target="{Binding ElementName=micThresh}"/>
+                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" Width="60px" Name="micThresh" TextChanged="TextChange"/>
+            </DockPanel>
+            <Button Width="120px" Padding="4px" Margin="4px" HorizontalAlignment="Left" Click="btn_getConfig">
+                Get current config
+            </Button>
+            <Button Width="120px" Padding="4px" Margin="4px" HorizontalAlignment="Left" Click="btn_setConfig">
+                Save config
+            </Button>
+        </StackPanel>
+        
+    </Grid>
+</Window>

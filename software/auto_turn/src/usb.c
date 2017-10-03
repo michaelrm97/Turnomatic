@@ -20,6 +20,8 @@
 #include <user.h>
 #include <mode.h>
 
+#include <gpio.h>
+
 // Convert array of bytes (little endian) into an unsigned int
 static _U32 bytes2int(_U08 *arr) {
 	_U32 ret = 0;

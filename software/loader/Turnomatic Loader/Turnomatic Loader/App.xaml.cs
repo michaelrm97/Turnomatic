@@ -8,8 +8,9 @@ using System.Windows;
 
 namespace Turnomatic_Loader
 {
-    
+
     public partial class App : Application
     {
+        
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Turnomatic_Loader
 {
 
-    class Song
+    public class Song
     {
         internal struct Chord
         {
@@ -193,7 +193,8 @@ namespace Turnomatic_Loader
                 }
 
                 // Debug.WriteLine(String.Format("Time delta: {0}", delta));
-                byte message = chunk[offset++];
+                byte message = chunk[offset];
+                offset++;
                 if (message == 0xFF)
                 {
                     // Meta event
@@ -307,51 +308,68 @@ namespace Turnomatic_Loader
                         case 0x80:
                             // Note off event
                             noteOn = false;
-                            key = (byte)(chunk[offset++] & 0x7F);
-                            val = (byte)(chunk[offset++] & 0x7F);
+                            key = (byte)(chunk[offset] & 0x7F);
+                            offset++;
+                            val = (byte)(chunk[offset] & 0x7F);
+                            offset++;
                             Debug.WriteLine("Note off: Key: {0} Vol: {1}", key, val);
-                            noteValues[key] = 0;
+                            if (channel == 0)
+                            {
+                                noteValues[key] = 0;
+                            }
                             notesChanged = true;
                             break;
                         case 0x90:
                             // Note on event
                             noteOn = true;
-                            key = (byte)(chunk[offset++] & 0x7F);
-                            val = (byte)(chunk[offset++] & 0x7F);
+                            key = (byte)(chunk[offset] & 0x7F);
+                            offset++;
+                            val = (byte)(chunk[offset] & 0x7F);
+                            offset++;
                             Debug.WriteLine("Note on: Key: {0} Vl: {1}", key, val);
-                            noteValues[key] = val;
+                            if (channel == 0)
+                            {
+                                noteValues[key] = val;
+                            }
                             notesChanged = true;
                             break;
                         case 0xA0:
                             noteOn = false;
                             // Polyphonic key pressure
-                            key = (byte)(chunk[offset++] & 0x7F);
-                            val = (byte)(chunk[offset++] & 0x7F);
+                            key = (byte)(chunk[offset] & 0x7F);
+                            offset++;
+                            val = (byte)(chunk[offset] & 0x7F);
+                            offset++;
                             Debug.WriteLine("Polyphonic key pressure: Key: {0} Pressure value: {1}", key, val);
                             break;
                         case 0xB0:
                             noteOn = false;
                             // Control change
-                            byte controller = (byte)(chunk[offset++] & 0x7F);
-                            val = (byte)(chunk[offset++] & 0x7F);
+                            byte controller = (byte)(chunk[offset] & 0x7F);
+                            offset++;
+                            val = (byte)(chunk[offset] & 0x7F);
+                            offset++;
                             Debug.WriteLine("Control change: Controller number: {0} Vel: {1}", controller, val);
                             break;
                         case 0xC0:
                             noteOn = false;
                             // Program change
-                            byte program = (byte)(chunk[offset++] & 0x7F);
+                            byte program = (byte)(chunk[offset] & 0x7F);
+                            offset++;
                             Debug.WriteLine("Program change: {0}", program);
                             break;
                         case 0xD0:
                             noteOn = false;
                             // Channel pressure
-                            val = (byte)(chunk[offset++] & 0x7F);
+                            val = (byte)(chunk[offset] & 0x7F);
+                            offset++;
                             Debug.WriteLine("Channel pressure: {0}", val);
                             break;
                         case 0xE0:
                             noteOn = false;
                             // Pitch Wheel Change
-                            short wheel = (short)((chunk[offset++] & 0x7F) | ((chunk[offset++] & 0x7F) << 7));
+                            short wheel = (short)((chunk[offset] & 0x7F) | ((chunk[offset + 1] & 0x7F) << 7));
+                            offset += 2;
                             Debug.WriteLine("Pitch wheel change: {0}", wheel);
                             break;
                         default:
@@ -359,14 +377,16 @@ namespace Turnomatic_Loader
                             {
                                 // Part of note on event
                                 key = (byte)(message & 0x7F);
-                                val = (byte)(chunk[offset++] & 0x7F);
+                                val = (byte)(chunk[offset] & 0x7F);
+                                offset++;
                                 Debug.WriteLine("Update note value: Key: {0} Vel: {1}", key, val);
                                 noteValues[key] = val;
                                 notesChanged = true;
                             } else
                             {
                                 // Unknown message type
-                                Debug.WriteLine("Unknown message type: {0} Data: {1}", message, chunk[offset++]);
+                                Debug.WriteLine("Unknown message type: {0} Data: {1}", message, chunk[offset]);
+                                offset++;
                             }
                             break;
                     }

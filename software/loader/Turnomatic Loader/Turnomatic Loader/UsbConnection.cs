@@ -9,7 +9,7 @@ using System.Linq;
 namespace Turnomatic_Loader
 {
 
-    class UsbConnection
+    public class UsbConnection
     {
 
         private const UInt32 TIMEOUT = 100;
@@ -22,6 +22,13 @@ namespace Turnomatic_Loader
         private short totalPages = 0;
 
         private List<String> songNames = new List<String>();
+
+        private int potValue = 0;
+
+        private int page1pos = 0;
+        private int pagePosDiff = 0;
+        private float motorGain = 0;
+        private float micThresh = 0;
         
         public short NumSongs {
             get {
@@ -58,6 +65,36 @@ namespace Turnomatic_Loader
         public bool IsOpen {
             get {
                 return device.IsOpen;
+            }
+        }
+
+        public int PotValue {
+            get {
+                return potValue;
+            }
+        }
+
+        public int Page1Pos {
+            get {
+                return page1pos;
+            }
+        }
+
+        public int PagePosDiff {
+            get {
+                return pagePosDiff;
+            }
+        }
+
+        public float MotorGain {
+            get {
+                return motorGain;
+            }
+        }
+
+        public float MicThresh {
+            get {
+                return micThresh;
             }
         }
 
@@ -138,7 +175,7 @@ namespace Turnomatic_Loader
             FTDI.FT_STATUS ftStatus;
             int timeout;
 
-            byte[] command = System.Text.Encoding.ASCII.GetBytes("LIST");
+            byte[] command = Encoding.ASCII.GetBytes("LIST");
             byte[] numCode = BitConverter.GetBytes(0);
             byte[] writeData = new byte[8];
             command.CopyTo(writeData, 0);
@@ -202,6 +239,10 @@ namespace Turnomatic_Loader
                 } while (numBytesAvailable < 20 * songsToRead);
 
                 ftStatus = device.Read(readData, 20 * songsToRead, ref numBytesRead);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
 
                 for (UInt32 i = 0; i < songsToRead; i++)
                 {
@@ -221,7 +262,7 @@ namespace Turnomatic_Loader
             FTDI.FT_STATUS ftStatus;
             int timeout;
 
-            byte[] command = System.Text.Encoding.ASCII.GetBytes("ADDS");
+            byte[] command = Encoding.ASCII.GetBytes("ADDS");
             byte[] numCode = BitConverter.GetBytes(s.sizeBytes);
             byte[] writeData = new byte[8];
             command.CopyTo(writeData, 0);
@@ -323,6 +364,11 @@ namespace Turnomatic_Loader
             readData = new byte[4];
             // Read first 4 bytes to determine if request is successful
             ftStatus = device.Read(readData, 4, ref numBytesRead);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
             succ = Encoding.ASCII.GetString(readData);
             if (succ != "SUCC")
             {
@@ -337,7 +383,7 @@ namespace Turnomatic_Loader
             FTDI.FT_STATUS ftStatus;
             UInt32 timeout;
 
-            byte[] command = System.Text.Encoding.ASCII.GetBytes("DELS");
+            byte[] command = Encoding.ASCII.GetBytes("DELS");
             byte[] numCode = BitConverter.GetBytes(num);
             byte[] writeData = new byte[8];
             command.CopyTo(writeData, 0);
@@ -385,6 +431,257 @@ namespace Turnomatic_Loader
                 }
 
             }
+
+        }
+
+        public bool GetPotValue()
+        {
+            FTDI.FT_STATUS ftStatus;
+            int timeout;
+
+            byte[] command = Encoding.ASCII.GetBytes("POTV");
+            byte[] numCode = BitConverter.GetBytes(0);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            UInt32 numBytesAvailable = 0;
+            timeout = 0;
+            do
+            {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            byte[] readData = new byte[4];
+            UInt32 numBytesRead = 0;
+
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            potValue = BitConverter.ToInt32(readData, 0);
+
+            return true;
+
+        }
+
+        public bool SetPotValue(int val)
+        {
+            FTDI.FT_STATUS ftStatus;
+            int timeout;
+
+            byte[] command = Encoding.ASCII.GetBytes("POTS");
+            byte[] numCode = BitConverter.GetBytes(val);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            UInt32 numBytesAvailable = 0;
+            timeout = 0;
+            do
+            {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            byte[] readData = new byte[4];
+            UInt32 numBytesRead = 0;
+
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            String succ = Encoding.ASCII.GetString(readData);
+            if (succ != "SUCC")
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        public bool GetConfigValues()
+        {
+            FTDI.FT_STATUS ftStatus;
+            int timeout;
+
+            byte[] command = Encoding.ASCII.GetBytes("CFGV");
+            byte[] numCode = BitConverter.GetBytes(0);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            UInt32 numBytesAvailable = 0;
+            timeout = 0;
+            do
+            {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 16);
+
+            byte[] readData = new byte[16];
+            UInt32 numBytesRead = 0;
+
+            ftStatus = device.Read(readData, 16, ref numBytesRead);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            page1pos = BitConverter.ToInt32(readData, 0);
+            pagePosDiff = BitConverter.ToInt32(readData, 4);
+            motorGain = BitConverter.ToSingle(readData, 8);
+            micThresh = BitConverter.ToSingle(readData, 12);
+
+            return true;
+
+        }
+
+        public bool SetConfigValues(int _page1pos, int _pagePosDiff, float _motorGain, float _micThresh)
+        {
+            FTDI.FT_STATUS ftStatus;
+            int timeout;
+
+            byte[] command = Encoding.ASCII.GetBytes("CFGS");
+            byte[] numCode = BitConverter.GetBytes(0);
+            byte[] writeData = new byte[8];
+            command.CopyTo(writeData, 0);
+            numCode.CopyTo(writeData, 4);
+            UInt32 numBytesWritten = 0;
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            UInt32 numBytesAvailable = 0;
+            timeout = 0;
+            do
+            {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            byte[] readData = new byte[4];
+            UInt32 numBytesRead = 0;
+
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            String succ = Encoding.ASCII.GetString(readData);
+            if (succ != "SUCC")
+            {
+                return false;
+            }
+
+            writeData = BitConverter.GetBytes(_page1pos).Concat(BitConverter.GetBytes(_pagePosDiff)).Concat(BitConverter.GetBytes(_motorGain)).Concat(BitConverter.GetBytes(_micThresh)).ToArray();
+
+            // Write data to device
+            ftStatus = device.Write(writeData, writeData.Length, ref numBytesWritten);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            numBytesAvailable = 0;
+            timeout = 0;
+            do
+            {
+                if (timeout++ == TIMEOUT)
+                {
+                    return false;
+                }
+                ftStatus = device.GetRxBytesAvailable(ref numBytesAvailable);
+                if (ftStatus != FTDI.FT_STATUS.FT_OK)
+                {
+                    return false;
+                }
+                Thread.Sleep(10);
+            } while (numBytesAvailable < 4);
+
+            readData = new byte[4];
+            numBytesRead = 0;
+
+            ftStatus = device.Read(readData, 4, ref numBytesRead);
+            if (ftStatus != FTDI.FT_STATUS.FT_OK)
+            {
+                return false;
+            }
+
+            succ = Encoding.ASCII.GetString(readData);
+            if (succ != "SUCC")
+            {
+                return false;
+            }
+
+            return true;
 
         }
 

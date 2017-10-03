@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -178,9 +179,13 @@ namespace Turnomatic_Loader
                 {
                     try
                     {
-                        curr = Byte.Parse(pageBreaks[i].Text);
+                        curr = short.Parse(pageBreaks[i].Text);
                     }
                     catch (FormatException)
+                    {
+                        canExecute = false;
+                        break;
+                    } catch (OverflowException)
                     {
                         canExecute = false;
                         break;
@@ -239,6 +244,26 @@ namespace Turnomatic_Loader
             }
         }
 
+        private void ConfigDeviceCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            // Can Execute as long as device is connected and song is selected
+            e.CanExecute = deviceConnected;
+        }
+
+        private void ConfigDeviceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ConfigDialogBox dlg = new ConfigDialogBox();
+
+            // Configure the dialog box
+            dlg.Owner = this;
+            dlg.Usb = usb;
+
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+
+
+        }
+
     }
 
     public static class CustomCommands
@@ -262,6 +287,17 @@ namespace Turnomatic_Loader
                 new InputGestureCollection()
                 {
                     new KeyGesture(Key.L, ModifierKeys.Control)
+                }
+            );
+
+        public static readonly RoutedUICommand ConfigDevice = new RoutedUICommand
+            (
+                "ConfigDevice",
+                "ConfigDevice",
+                typeof(CustomCommands),
+                new InputGestureCollection()
+                {
+                    new KeyGesture(Key.Q, ModifierKeys.Control | ModifierKeys.Shift)
                 }
             );
     }
