@@ -29,18 +29,16 @@ typedef struct {
 } Song_Entry;
 
 // Initial song table
-__RODATA(Flash2) const Song_Entry song_table[MAX_SONGS] = {0};
+__RODATA(Flash3) const Song_Entry song_table[MAX_SONGS] = {0};
 
 // Initialise song table
 // Work out number of songs and used pages
 void song_table_init(void) {
-	int i;
-	for (i = 0; i < MAX_SONGS; i++) {
-		if (song_table[i].num_chords == 0) {
+	for (num_songs = 0; num_songs < MAX_SONGS; num_songs++) {
+		if (song_table[num_songs].num_chords == 0) {
 			break;
 		}
 	}
-	num_songs = i;
 	if (num_songs > 0) {
 		used_pages = song_table[num_songs - 1].flash_page - SONG_DATA_PAGE +
 				((song_table[num_songs - 1].num_chords + 31) >> 5);
@@ -120,9 +118,6 @@ _U32 song_store(_U16 num_chords, Bar_t *page_break, char *name) {
 // Delete song from song table
 // Returns whether delete was successful or not
 bool song_delete(int n) {
-	if (n >= num_songs) {
-		return FALSE;
-	}
 	_U32 del_pages = (SONG_TABLE[n].num_chords + 31) >> 5;
 	_U32 start = (n << 5) & ~(0xFF);
 	_U32 end = ((num_songs - 1) << 5) & ~(0xFF);

@@ -17,7 +17,7 @@
 #include <config_table.h>
 
 // Target motor position
-_U32 motor_pos;
+static _U32 motor_pos;
 
 // Initialise motor
 void motor_init(void) {

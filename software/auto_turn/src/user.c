@@ -344,7 +344,9 @@ void PIN_INT0_IRQHandler(void) {
 		if (curr_bar != 1) {
 		// Go back to bar 1
 			track_reset_bar();
-			if (update_bar_number() || update_page_number()) {
+			bool update = update_bar_number();
+			update = update_page_number() || update;
+			if (update) {
 				pm_write_buffer();
 			}
 			user_mode_set(MODE_PAUSED);

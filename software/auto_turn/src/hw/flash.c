@@ -18,7 +18,7 @@ volatile _U08 flash_buffer[BUFFER_SIZE] __attribute__((aligned(PAGE_ALIGNMENT)))
 // Returns address immediately after written flash
 _U32 flash_copy(_U32 addr, _U32 offset, _U32 size) {
 
-	if (addr < 0xF000) {
+	if (addr < 0xE000) {
 		return addr; // Prevent accidental writing of code section
 	}
 

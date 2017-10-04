@@ -118,6 +118,28 @@ namespace Turnomatic_Loader
             }
         }
 
+        private void posBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key.ToString() == "Return")
+            {
+                try
+                {
+                    int val = int.Parse(posBox.Text);
+                    if (usb.SetPotValue(val))
+                    {
+                        potValuesBox.Items.Insert(0, String.Format("({0})", val));
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error setting pot value", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (FormatException)
+                {
+                    MessageBox.Show("Error setting pot value", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
 
 }

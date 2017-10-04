@@ -14,7 +14,7 @@
 
 #include <string.h>
 
-__RODATA(Flash4) const _U32 config_table[4] = {
+__RODATA(Flash2) const _U32 config_table[4] = {
 		DEFAULT_PAGE1_POS,
 		DEFAULT_PAGE_POS_DIFF,
 		DEFAULT_MOTOR_GAIN,
@@ -22,7 +22,7 @@ __RODATA(Flash4) const _U32 config_table[4] = {
 };
 
 void config_set_values(_U32 * newValues) {
-	flash_read((_U32) config_table, 256);
+	flash_read(CONFIG_TABLE_BASE, 256);
 	memcpy(flash_buffer, newValues, 16);
-	flash_copy((_U32) config_table, 0, 256);
+	flash_copy(CONFIG_TABLE_BASE, 0, 256);
 }

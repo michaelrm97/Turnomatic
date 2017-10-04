@@ -13,6 +13,7 @@ namespace Turnomatic_Loader
     {
 
         private const UInt32 TIMEOUT = 100;
+        private const UInt32 BAUD_RATE = 115200;
 
         private FTDI device = new FTDI();
 
@@ -132,8 +133,8 @@ namespace Turnomatic_Loader
             }
 
             // Set up device data parameters
-            // Set Baud rate to 115200
-            ftStatus = device.SetBaudRate(115200);
+            // Set baud rate
+            ftStatus = device.SetBaudRate(BAUD_RATE);
             if (ftStatus != FTDI.FT_STATUS.FT_OK)
             {
                 return false;

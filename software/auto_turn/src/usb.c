@@ -55,7 +55,7 @@ void usb_ack(void) {
 // Determines type of message then sends appropriate response
 void UART0_IRQHandler(void) {
 	// Check that we actually have data to receive
-	gpio_togglePinValue(1, 4);
+//	gpio_togglePinValue(1, 4);
 	if (Chip_UART_GetStatus(USB_UART) & UART_STAT_RXRDY) {
 		_U08 data[32];
 		uart_readBytes(USB_UART, data, 8);
@@ -78,8 +78,7 @@ void UART0_IRQHandler(void) {
 			uart_sendBytes(USB_UART, data, 8);
 
 			for (int i = 0; i < num; i++) {
-				_U08 *name = (_U08 *) song_name_get(i);
-				uart_sendBytes(USB_UART, name, MAX_SONG_LEN);
+				uart_sendBytes(USB_UART, (_U08 *) song_name_get(i), MAX_SONG_LEN);
 			}
 
 		} else if (!strcmp(command, "ADDS")) {
@@ -161,7 +160,7 @@ void UART0_IRQHandler(void) {
 			}
 			uart_sendBytes(USB_UART, data, 4);
 		} else if (!strcmp(command, "CFGV")) {
-			uart_sendBytes(USB_UART, CONFIG_TABLE_BASE, 4);
+			uart_sendBytes(USB_UART, (_U08 *)CONFIG_TABLE_BASE, 16);
 		} else if (!strcmp(command, "CFGS")) {
 			strncpy((char *)data, "SUCC", 4);
 			uart_sendBytes(USB_UART, data, 4);

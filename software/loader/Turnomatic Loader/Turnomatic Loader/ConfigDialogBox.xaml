@@ -43,7 +43,7 @@
                 <ListBox Name="potValuesBox"/>
             </ScrollViewer>
             <DockPanel Margin="4px" LastChildFill="False">
-                <TextBox Name="posBox" DockPanel.Dock="Left" Width="100"/>
+                <TextBox Name="posBox" DockPanel.Dock="Left" KeyDown="posBox_KeyDown"  Width="100"/>
                 <Button DockPanel.Dock="Right" Width="80px" Click="btn_setPot">Set Pos</Button>
             </DockPanel>
         </StackPanel>

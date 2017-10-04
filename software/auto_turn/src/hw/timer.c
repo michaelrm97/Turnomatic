@@ -47,6 +47,6 @@ void timer_set_periodic(_U32 period) {
 // Unset periodic interrupt generation
 void timer_unset_periodic(void) {
 	Chip_TIMER_Disable(LPC_TIMER1);
-	NVIC_ClearPendingIRQ(CT32B1_IRQn);
-	NVIC_DisableIRQ(CT32B1_IRQn);
+	NVIC_ClearPendingIRQ(PERIOD_TIMER_NVIC);
+	NVIC_DisableIRQ(PERIOD_TIMER_NVIC);
 }

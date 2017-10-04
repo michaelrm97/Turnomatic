@@ -74,14 +74,10 @@ void gpio_assignInterrupt(_U08 port, _U08 pin,
 	/* Set interrupt detection type */
 	if (imode == GPIO_INT_MODE_EDGE) {
 		Chip_PININT_SetPinModeEdge(LPC_PININT, PININTCH(channel));
-		if (edge == GPIO_INT_EDGE_RISING) {
+		if (edge == GPIO_INT_EDGE_RISING || edge == GPIO_INT_EDGE_ALL) {
 			Chip_PININT_EnableIntHigh(LPC_PININT, PININTCH(channel));
 		}
-		else if (edge == GPIO_INT_EDGE_FALLING) {
-			Chip_PININT_EnableIntLow(LPC_PININT, PININTCH(channel));
-		}
-		else if (edge == GPIO_INT_EDGE_ALL){
-			Chip_PININT_EnableIntHigh(LPC_PININT, PININTCH(channel));
+		if (edge == GPIO_INT_EDGE_FALLING || edge == GPIO_INT_EDGE_ALL) {
 			Chip_PININT_EnableIntLow(LPC_PININT, PININTCH(channel));
 		}
 	}

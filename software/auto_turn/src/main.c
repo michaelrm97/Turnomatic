@@ -51,12 +51,12 @@ int main(void) {
     usb_init();
 
     // Main loop
-    while (1) {
+    while (TRUE) {
     	if (mode == MODE_PLAYING) {
     		track_update();
     		user_update();
     	}
     }
 
-    return 0 ;
+    return 0;
 }
