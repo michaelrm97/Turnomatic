@@ -16,6 +16,8 @@
 #include <motor.h>
 #include <user.h>
 
+#include <config_table.h>
+
 #define NOTES_IN_OCTAVE 12
 
 Bar_t curr_bar;
@@ -94,6 +96,7 @@ void track_set_song(Song s) {
 	curr_song = s;
 	curr_note = NO_NOTE;
 	curr_chord = 0;
+	motor_set_page(1);
 }
 
 // Begin tracking a song

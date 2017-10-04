@@ -14,6 +14,8 @@
 #include <gpio.h>
 #include <timer.h>
 
+#include <config_table.h>
+
 // Target motor position
 _U32 motor_pos;
 

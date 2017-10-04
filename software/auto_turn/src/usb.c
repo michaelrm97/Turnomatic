@@ -17,10 +17,13 @@
 #include <pmoleds.h>
 #include <pm_graphics.h>
 #include <song_table.h>
+#include <config_table.h>
 #include <user.h>
 #include <mode.h>
 
 #include <gpio.h>
+#include <adc.h>
+#include <motor.h>
 
 // Convert array of bytes (little endian) into an unsigned int
 static _U32 bytes2int(_U08 *arr) {
@@ -52,6 +55,7 @@ void usb_ack(void) {
 // Determines type of message then sends appropriate response
 void UART0_IRQHandler(void) {
 	// Check that we actually have data to receive
+	gpio_togglePinValue(1, 4);
 	if (Chip_UART_GetStatus(USB_UART) & UART_STAT_RXRDY) {
 		_U08 data[32];
 		uart_readBytes(USB_UART, data, 8);
@@ -131,12 +135,40 @@ void UART0_IRQHandler(void) {
 			user_enter_deleting(song_name_get(n));
 			if (song_delete(n)) {
 				strncpy((char *)data, "SUCC", 4);
-				uart_sendBytes(USB_UART, data, 4);
 			} else {
 				strncpy((char *)data, "FAIL", 4);
-				uart_sendBytes(USB_UART, data, 4);
 			}
+			uart_sendBytes(USB_UART, data, 4);
 			user_exit_loading();
+		} else if (!strcmp(command, "POTV")) {
+			_U16 val = adc_readPin(POT_ADC_CHANNEL);
+			data[0] = val & 0xFF;
+			data[1] = (val >> 8);
+			data[2] = 0;
+			data[3] = 0;
+			uart_sendBytes(USB_UART, data, 4);
+		} else if (!strcmp(command, "POTS")) {
+			_U32 pos = bytes2int(&data[4]);
+			if (pos < 4096) {
+				motor_set_pos(pos);
+				strncpy((char *)data, "SUCC", 4);
+			} else if (((int) pos) == -1) {
+				motor_stop();
+				strncpy((char *)data, "SUCC", 4);
+			}
+			else {
+				strncpy((char *)data, "FAIL", 4);
+			}
+			uart_sendBytes(USB_UART, data, 4);
+		} else if (!strcmp(command, "CFGV")) {
+			uart_sendBytes(USB_UART, CONFIG_TABLE_BASE, 4);
+		} else if (!strcmp(command, "CFGS")) {
+			strncpy((char *)data, "SUCC", 4);
+			uart_sendBytes(USB_UART, data, 4);
+			uart_readBytes(USB_UART, data, 16);
+			config_set_values((_U32 *)data);
+			strncpy((char *)data, "SUCC", 4);
+			uart_sendBytes(USB_UART, data, 4);
 		}
 	}
 }

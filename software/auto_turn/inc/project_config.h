@@ -32,14 +32,14 @@
 #define POT_ADC_CHANNEL 1
 #define MOTOR_SAMPLE_PERIOD 1000
 #define MOTOR_THRESHOLD 16
-#define MOTOR_GAIN 1
-
-#define MOTOR_PAGE1_POS 250
-#define MOTOR_PAGE_POS_DIFF 600
+//#define MOTOR_GAIN 1
+//
+//#define MOTOR_PAGE1_POS 250
+//#define MOTOR_PAGE_POS_DIFF 600
 
 // MIC Settings
 #define MIC_ADC_CHANNEL 8
-#define MIC_THRESHOLD 5e10
+//#define MIC_THRESHOLD 5e10
 
 // USB Constants
 #define USB_UART LPC_USART0
@@ -59,6 +59,13 @@
 #define COPY_SIZE 256 // For simplicity only copy 256 bytes at a time
 #define BUFFER_SIZE 4096
 #define PAGE_ALIGNMENT 256
+
+#define CONFIG_TABLE_PAGE 0xE0
+#define CONFIG_TABLE_BASE 0xE000
+#define DEFAULT_PAGE1_POS 250
+#define DEFAULT_PAGE_POS_DIFF 600
+#define DEFAULT_MOTOR_GAIN 0x3f800000 // 1
+#define DEFAULT_MIC_THRESHOLD 0x513a43b7 // 5e10
 
 // Song constants
 #define MAX_NOTES_IN_CHORD 4
