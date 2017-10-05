@@ -16,7 +16,7 @@ void adc_init(void) {
 
     sct_init();
 
-	Chip_ADC_Init(LPC_ADC, (ADC_CR_RESOL(0x3) | ADC_CR_TSAMP(ADC_TSAMP_7CLK5)));
+	Chip_ADC_Init(LPC_ADC, (ADC_CR_RESOL(0x3) | ADC_CR_TSAMP(ADC_TSAMP_9CLK5)));
 
 	LPC_ADC->STARTUP = 0x1;
 	LPC_ADC->STARTUP = 0x3;
@@ -24,6 +24,8 @@ void adc_init(void) {
 	Chip_ADC_Calibration(LPC_ADC);
 
 	// Set sequencer A from SCT0-7
+
+//	Chip_ADC_SetClockRate(LPC_ADC, ADC_MAX_SAMPLE_RATE);
 
 	Chip_ADC_SetupSequencer(LPC_ADC, ADC_SEQA_IDX, (ADC_SEQ_CTRL_TRIGGER(2) |
 		ADC_SEQ_CTRL_HWTRIG_POLPOS | ADC_SEQ_CTRL_MODE_EOS));

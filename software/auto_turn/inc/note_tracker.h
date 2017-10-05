@@ -36,6 +36,5 @@ void track_set_song(Song s);
 // Based on last note played
 void track_begin(void);
 void track_update(void);
-void track_stop(void);
 
 #endif /* NOTE_TRACKER_H_ */

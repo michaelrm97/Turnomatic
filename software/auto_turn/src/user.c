@@ -339,7 +339,6 @@ void PIN_INT0_IRQHandler(void) {
 	switch(mode) {
 	case MODE_PLAYING:
 		// Stop tracking of song
-		track_stop();
 	case MODE_PAUSED:
 		if (curr_bar != 1) {
 		// Go back to bar 1
@@ -378,7 +377,6 @@ void PIN_INT1_IRQHandler(void) {
 	switch(mode) {
 	case MODE_PLAYING:
 		// Stop tracking of song
-		track_stop();
 		user_mode_set(MODE_PAUSED);
 	case MODE_PAUSED:
 		// Do nothing
@@ -414,8 +412,8 @@ void PIN_INT2_IRQHandler(void) {
 		if (curr_selection < song_num()) {
 			track_set_song(song_load(curr_selection));
 			setup_play_display(song_name_get(curr_selection));
-			user_mode_set(MODE_PLAYING);
 			track_begin();
+			user_mode_set(MODE_PLAYING);
 		}
 		break;
 	case MODE_LOADING:
