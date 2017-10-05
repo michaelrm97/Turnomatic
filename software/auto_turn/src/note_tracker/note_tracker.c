@@ -102,12 +102,10 @@ void track_set_song(Song s) {
 // Begin tracking a song
 void track_begin(void) {
 	filter_reset();
-	adc_set_periodic(F_SAMPLE, MIC_ADC_CHANNEL);
 }
 
 // Stop tracking a song
 void track_stop(void) {
-	adc_unset_periodic();
 }
 
 // Update position in song based on last note played
@@ -139,11 +137,4 @@ void track_update(void) {
 		}
 	}
 
-}
-
-// Callback function upon completion of adc read
-// Passes latest adc value into filter
-void ADC_SEQA_IRQHandler(void) {
-	Chip_ADC_ClearFlags(LPC_ADC, ADC_FLAGS_SEQA_INT_MASK);
-	filter_input(ADC_DR_RESULT(Chip_ADC_GetDataReg(LPC_ADC, MIC_ADC_CHANNEL)));
 }

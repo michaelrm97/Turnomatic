@@ -15,6 +15,7 @@
 #include <timer.h>
 
 #include <config_table.h>
+#include <adc_handler.h>
 
 // Target motor position
 static _U32 motor_pos;
@@ -71,7 +72,7 @@ void CT32B2_IRQHandler(void) {
 	if (Chip_TIMER_MatchPending(PERIOD_TIMER, 0)) {
 		Chip_TIMER_ClearMatch(PERIOD_TIMER, 0);
 		_U16 ticks;
-		_U32 curr_pos = adc_readPin(POT_ADC_CHANNEL);
+		_U32 curr_pos = pos_get_value();
 		if (curr_pos - motor_pos < MOTOR_THRESHOLD || motor_pos - curr_pos < MOTOR_THRESHOLD) {
 			motor_stop();
 		} else if (curr_pos < motor_pos) {

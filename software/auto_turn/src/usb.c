@@ -18,6 +18,7 @@
 #include <pm_graphics.h>
 #include <song_table.h>
 #include <config_table.h>
+#include <adc_handler.h>
 #include <user.h>
 #include <mode.h>
 
@@ -140,7 +141,7 @@ void UART0_IRQHandler(void) {
 			uart_sendBytes(USB_UART, data, 4);
 			user_exit_loading();
 		} else if (!strcmp(command, "POTV")) {
-			_U16 val = adc_readPin(POT_ADC_CHANNEL);
+			_U16 val = pos_get_value();
 			data[0] = val & 0xFF;
 			data[1] = (val >> 8);
 			data[2] = 0;

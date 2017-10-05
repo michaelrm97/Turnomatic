@@ -33,6 +33,8 @@
 #include <user.h>
 #include <usb.h>
 
+#include <filters.h>
+
 MODE mode;
 
 int main(void) {
@@ -49,6 +51,8 @@ int main(void) {
     track_init();
     user_init();
     usb_init();
+
+    adc_set_periodic(F_SAMPLE, (1 << POT_ADC_CHANNEL) | (1 << MIC_ADC_CHANNEL));
 
     // Main loop
     while (TRUE) {
