@@ -72,9 +72,9 @@ void track_increment_bar(void) {
 		}
 		if (curr_page < max_page && curr_bar >= curr_song.page_break[curr_page - 1]) {
 			curr_page++;
+			motor_set_page(curr_page);
 		}
 	}
-	motor_set_page(curr_page);
 }
 
 // Decrement bar number by 1
@@ -91,9 +91,9 @@ void track_decrement_bar(void) {
 		}
 		if (curr_page > 1 && curr_bar < curr_song.page_break[curr_page - 2]) {
 			curr_page--;
+			motor_set_page(curr_page);
 		}
 	}
-	motor_set_page(curr_page);
 }
 
 // Set song to track
@@ -139,6 +139,12 @@ void track_update(void) {
 				curr_page++;
 				// Set motor position
 				motor_set_page(curr_page);
+			} else if (curr_page > 1 && curr_bar < curr_song.page_break[curr_page - 2]) {
+				curr_page--;
+				while (curr_page > 1 && curr_bar < curr_song.page_break[curr_page - 2]) {
+					curr_page--;
+				}
+				motor_set_page(curr_page);
 			}
 		} else {
 			user_mode_set(MODE_PAUSED);
@@ -156,6 +162,12 @@ void track_update(void) {
 				if (curr_page < max_page && curr_bar >= curr_song.page_break[curr_page - 1]) {
 					curr_page++;
 					// Set motor position
+					motor_set_page(curr_page);
+				} else if (curr_page > 1 && curr_bar < curr_song.page_break[curr_page - 2]) {
+					curr_page--;
+					while (curr_page > 1 && curr_bar < curr_song.page_break[curr_page - 2]) {
+						curr_page--;
+					}
 					motor_set_page(curr_page);
 				}
 			} else {

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -40,50 +42,20 @@ namespace Turnomatic_Loader
                 String fileName = openFileDialog.FileName;
                 if (fileName.EndsWith(".mid") || fileName.EndsWith(".midi"))
                 {
-                    try
-                    {
-                        song = new Song(fileName);
-                    } catch (IOException)
-                    {
-                        MessageBox.Show("Error reading MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        fileLoaded = false;
-                        fileNameBox.Text = "Select MIDI file";
-                        songLengthBox.Text = "-";
-                        songSizeBox.Text = "-";
-                        songName.IsEnabled = false;
-                        numPagesBox.IsEnabled = false;
-                        for (int i = 0; i < 4; i++)
-                        {
-                            pageBreaks[i].IsEnabled = false;
-                        }
-                        return;
-                    } catch (FileFormatException)
-                    {
-                        MessageBox.Show("Error reading MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        fileLoaded = false;
-                        fileNameBox.Text = "Select MIDI file";
-                        songLengthBox.Text = "-";
-                        songSizeBox.Text = "-";
-                        songName.IsEnabled = false;
-                        numPagesBox.IsEnabled = false;
-                        for (int i = 0; i < 4; i++)
-                        {
-                            pageBreaks[i].IsEnabled = false;
-                        }
-                        return;
-                    }
-
-                    fileLoaded = true;
                     // Display filename in textbox
-                    fileNameBox.Text = fileName;
-                    songLengthBox.Text = song.Length.ToString() + " bars";
-                    songSizeBox.Text = song.SizekB.ToString("0.00") + " kB";
-                    songName.IsEnabled = true;
-                    numPagesBox.IsEnabled = true;
-                    for (int i = 0; i < 4; i++)
+                    var fileUri = new Uri(fileName);
+                    var referenceUri = new Uri(Directory.GetCurrentDirectory());
+                    String relFileName = referenceUri.MakeRelativeUri(fileUri).ToString();
+                    if (relFileName.StartsWith(".."))
                     {
-                        pageBreaks[i].IsEnabled = (i < numPagesBox.SelectedIndex);
+                        fileNameBox.Text = fileName;
+                    } else
+                    {
+                        fileNameBox.Text = relFileName;
                     }
+                } else
+                {
+                    MessageBox.Show("Please specify a MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -134,6 +106,68 @@ namespace Turnomatic_Loader
                     pageBreaks[i].IsEnabled = (i < comb.SelectedIndex);
                 }
             }
+        }
+
+        private void btn_loadSong(object sender, RoutedEventArgs e)
+        {
+            String fileName = fileNameBox.Text;
+            if (fileName.Length == 0)
+            {
+                // Throw error message
+                MessageBox.Show("Please specify a filename", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (!(fileName.EndsWith(".mid") || fileName.EndsWith(".midi")))
+            {
+                // Throw error message
+                MessageBox.Show("Please specify a MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+
+                Regex rgx1 = new Regex(@"(?<=\[)\d+ \d+(?=\])");
+
+                List<int[]> repeats = new List<int[]>();
+                foreach (Match m in rgx1.Matches(repeatsList.Text))
+                {
+                    int[] bars = new int[2];
+                    String[] barStrings = m.ToString().Split(' ');
+                    Debug.WriteLine(barStrings);
+                    bars[0] = int.Parse(barStrings[0]);
+                    bars[1] = int.Parse(barStrings[1]);
+                    if (bars[1] < bars[0])
+                    {
+                        MessageBox.Show("Invalid repeats", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    repeats.Add(bars);
+                }
+                song = new Song(fileNameBox.Text, repeats);
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Could not open MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            catch (FileFormatException)
+            {
+                MessageBox.Show("Error reading MIDI file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            songLengthBox.Text = song.Length.ToString() + " bars";
+            songSizeBox.Text = song.SizekB.ToString("0.00") + " kB";
+            songName.IsEnabled = true;
+            numPagesBox.IsEnabled = true;
+            for (int i = 0; i < 4; i++)
+            {
+                pageBreaks[i].IsEnabled = (i < numPagesBox.SelectedIndex);
+            }
+
+            fileLoaded = true;
         }
 
         private void DelSongCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

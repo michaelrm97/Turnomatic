@@ -1,5 +1,6 @@
 // Filter bank used to estimate notes
 
+#include <chip.h>
 #include <filters.h>
 
 static Sound_t filter_values[N_FILTER]; // Last N_FILTER values of input

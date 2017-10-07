@@ -92,7 +92,7 @@ namespace Turnomatic_Loader
         } 
 
         // Convert a midi file to a song
-        public Song(String fileName)
+        public Song(String fileName, List<int[]> repeats)
         {
             chords.Clear();
 
@@ -102,6 +102,9 @@ namespace Turnomatic_Loader
                 br = new BinaryReader(new FileStream(fileName, FileMode.Open));
             }
             catch (IOException e)
+            {
+                throw e;
+            } catch (ArgumentException e)
             {
                 throw e;
             }
@@ -157,6 +160,17 @@ namespace Turnomatic_Loader
             int refbar = 1;
             int cbar = 1;
 
+            int returnBar = 1;
+            int endBar = -1;
+
+            if (repeats.Count > 0)
+            {
+                int[] repeat = repeats[0];
+                repeats.RemoveAt(0);
+                returnBar = repeat[0];
+                endBar = repeat[1];
+            }
+
             bool notesChanged = false;
 
             while (offset < chunkLength && !endOfTrack)
@@ -190,6 +204,21 @@ namespace Turnomatic_Loader
                 {
                     cbar = (int)((ctime - reftime) / (division * timeSig)) + refbar;
                     Debug.WriteLine(String.Format("Current time: {0} Current bar: {1}", ctime, cbar));
+                    if (endBar != -1 && cbar > endBar)
+                    {
+                        cbar = returnBar;
+                        if (repeats.Count > 0)
+                        {
+                            int[] repeat = repeats[0];
+                            repeats.RemoveAt(0);
+                            returnBar = repeat[0];
+                            endBar = repeat[1];
+                        } else
+                        {
+                            endBar = -1;
+                        }
+
+                    }
                 }
 
                 // Debug.WriteLine(String.Format("Time delta: {0}", delta));
@@ -272,6 +301,10 @@ namespace Turnomatic_Loader
                             Debug.WriteLine(String.Format("32nd notes per MIDI quarter note: {0}", bb));
                             timeSig = (int) (nn * Math.Pow(2, 2 - dd));
                             reftime = ctime;
+                            if (cbar == 2)
+                            {
+                                cbar--; // Anacrusis
+                            }
                             refbar = cbar;
                             break;
                         case 0x59:
