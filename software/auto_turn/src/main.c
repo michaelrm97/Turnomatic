@@ -34,6 +34,7 @@
 #include <usb.h>
 
 #include <filters.h>
+#include <adc_handler.h>
 
 MODE mode;
 
@@ -52,7 +53,7 @@ int main(void) {
     user_init();
     usb_init();
 
-    adc_set_periodic(F_SAMPLE, (1 << POT_ADC_CHANNEL) | (1 << MIC_ADC_CHANNEL));
+    adc_handler_init();
 
     // Main loop
     while (TRUE) {

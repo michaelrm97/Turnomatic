@@ -1,6 +1,6 @@
 // Filter bank used to estimate notes
 
-#include "filters.h"
+#include <filters.h>
 
 const float filter_coeff[R_NOTE] = {
    -1.9764953703101444,
@@ -34,5 +34,9 @@ const float filter_coeff[R_NOTE] = {
    -1.4271554658642118,
    -1.3611883835709504,
    -1.2876502091487252,
-   -1.2061211357487258
+   -1.2061211357487258,
+   -1.116225900070488,
+   -1.0176501084833631,
+   -0.9101580725809452,
+   -0.7936120386336726
 };

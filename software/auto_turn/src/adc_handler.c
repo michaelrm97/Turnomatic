@@ -11,10 +11,14 @@
 #include <mode.h>
 #include <filters.h>
 
-#define NUM_POS 8
+#define NUM_POS 32
 
 static _U16 pos_values[NUM_POS];
 static int pos_index = 0;
+
+void adc_handler_init(void) {
+	adc_set_periodic(F_SAMPLE, (1 << POT_ADC_CHANNEL) | (1 << MIC_ADC_CHANNEL));
+}
 
 _U16 pos_get_value(void) {
 	_U32 result = 0;

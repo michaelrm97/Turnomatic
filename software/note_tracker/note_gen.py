@@ -129,7 +129,7 @@ const float note_freq[N_NOTES] = {""")
 #define FILTERS_H
 
 #include <stdint.h>
-#include "notes.h"
+#include <notes.h>
 
 typedef int16_t Sound_t; // 16 bits for sound input
 typedef float Filter_t; // Filter values
@@ -148,6 +148,10 @@ typedef float Power_t; // Average power of filter
         print('#define MAX_NOTE %s' % max)
         print('#define R_NOTE MAX_NOTE - MIN_NOTE + 1')
         print("""
+#define N_COMB  4    // Number of comb filter output values to store
+#define N_RES   4    // Number of resonator filter output values to store
+#define N_POWER 128  // Number of power values to store for each note
+
 // a2 and b1 coefficients of filter
 extern const float filter_coeff[R_NOTE];
 
@@ -177,7 +181,7 @@ uint8_t filter_notes(Note_t *notes, Power_t *powers, uint8_t num, float threshol
             sys.exit(1)
         print("""// Filter bank used to estimate notes
 
-#include "filters.h"
+#include <filters.h>
 
 const float filter_coeff[R_NOTE] = {""")
         print('  ', ',\n   '.join([str(x) for x in gen_coeff(Fs, N, a, min, max)]))

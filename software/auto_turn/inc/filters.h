@@ -10,6 +10,7 @@ typedef int16_t Sound_t; // 16 bits for sound input
 typedef float Filter_t; // Filter values
 typedef float Power_t; // Average power of filter
 
+
 #define F_SAMPLE 8000 // Sample rate
 #define N_FILTER 2048 // Comb filter order
 #define A_FILTER 0.99999 // Poles slightly inside unit circle
@@ -19,7 +20,7 @@ typedef float Power_t; // Average power of filter
 #define RES_B2  0.9999800001000001
 
 #define MIN_NOTE G3
-#define MAX_NOTE D6
+#define MAX_NOTE FS6
 #define R_NOTE MAX_NOTE - MIN_NOTE + 1
 
 #define N_COMB  4    // Number of comb filter output values to store
