@@ -20,7 +20,7 @@ typedef float Power_t; // Average power of filter
 #define RES_B2  0.9999800001000001
 
 #define MIN_NOTE G3
-#define MAX_NOTE FS6
+#define MAX_NOTE D6
 #define R_NOTE MAX_NOTE - MIN_NOTE + 1
 
 #define N_COMB  4    // Number of comb filter output values to store

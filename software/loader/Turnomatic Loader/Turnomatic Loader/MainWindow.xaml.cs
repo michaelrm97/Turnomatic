@@ -29,7 +29,6 @@ namespace Turnomatic_Loader
                 break1,
                 break2,
                 break3,
-                break4
             };
         }
 
@@ -101,7 +100,7 @@ namespace Turnomatic_Loader
             ComboBox comb = sender as ComboBox;
             if (comb != null && pageBreaks != null)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     pageBreaks[i].IsEnabled = (i < comb.SelectedIndex);
                 }
@@ -162,7 +161,7 @@ namespace Turnomatic_Loader
             songSizeBox.Text = song.SizekB.ToString("0.00") + " kB";
             songName.IsEnabled = true;
             numPagesBox.IsEnabled = true;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 pageBreaks[i].IsEnabled = (i < numPagesBox.SelectedIndex);
             }

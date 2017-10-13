@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Turnomatic_Loader"
         mc:Ignorable="d"
-        Title="Turnomatic Loader" Height="480" Width="675" MinHeight="480" MinWidth="600">
+        Title="Turnomatic Loader" Height="450" Width="675" MinHeight="450" MinWidth="600">
     <Window.CommandBindings>
         <CommandBinding Command="local:CustomCommands.DelSong" Executed="DelSongCommand_Executed" CanExecute="DelSongCommand_CanExecute" />
         <CommandBinding Command="local:CustomCommands.LoadSong" Executed="LoadSongCommand_Executed" CanExecute="LoadSongCommand_CanExecute" />
@@ -43,7 +43,7 @@
                 <TextBlock Name="foundDevice" VerticalAlignment="Center" Text=""/>
             </WrapPanel>
             <Label Content="Songs on device:" Target="{Binding ElementName=songList}" />
-            <ScrollViewer Name="songList" Margin="4px" VerticalScrollBarVisibility="Visible" Height="260px">
+            <ScrollViewer Name="songList" Margin="4px" VerticalScrollBarVisibility="Visible" Height="225px">
                 <ListBox Name="songListBox" IsEnabled="False"/>
             </ScrollViewer>
             <DockPanel Margin="4px">
@@ -98,7 +98,6 @@
                     <ComboBoxItem>2</ComboBoxItem>
                     <ComboBoxItem>3</ComboBoxItem>
                     <ComboBoxItem>4</ComboBoxItem>
-                    <ComboBoxItem>5</ComboBoxItem>
                 </ComboBox>
             </WrapPanel>
             <DockPanel Margin="0,2,4,2" LastChildFill="False">
@@ -114,11 +113,6 @@
             <DockPanel Margin="0,2,4,2" LastChildFill="False">
                 <Label Width="80px" DockPanel.Dock="Left" Content="Page break 3" Target="{Binding ElementName=break3}"/>
                 <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" IsEnabled="False" Width="40px" Name="break3"/>
-                <TextBlock Width="40px" Padding="4px" DockPanel.Dock="Right" VerticalAlignment="Center" TextAlignment="Right" Text="Bar"/>
-            </DockPanel>
-            <DockPanel Margin="0,2,4,2" LastChildFill="False">
-                <Label Width="80px" DockPanel.Dock="Left" Content="Page break 4" Target="{Binding ElementName=break4}"/>
-                <TextBox DockPanel.Dock="Right" VerticalAlignment="Center" IsEnabled="False" Width="40px" Name="break4"/>
                 <TextBlock Width="40px" Padding="4px" DockPanel.Dock="Right" VerticalAlignment="Center" TextAlignment="Right" Text="Bar"/>
             </DockPanel>
             <Button Width="60px" Padding="4px" Margin="4px" HorizontalAlignment="Right" Command="local:CustomCommands.LoadSong">
