@@ -13,3 +13,4 @@ auto_turn/.cproject
 */*/.vs/*
 */*/*/bin/*
 */*/*/obj/*
+.vscode
